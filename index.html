@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta content="telephone=no" name="format-detection" />
+<meta name="keywords" content="seokeywords"/>
+<meta name="description" content="seodescription"/>
+<link rel="stylesheet" href="css/index.css">
+<title>首页</title>
+</head>
+<body> 
+<div class="imgbox"> 
+    <ul>
+        <li><a href="#"><img src="images/1.jpg" width="100%"></img></a></li>
+        <li><a href="#"><img src="images/2.jpg" width="100%"></img></a></li>
+        <li><a href="#"><img src="images/4.jpg" width="100%"></img></a></li>
+    </ul>
+</div>
+
+
+
+<div class="footer"></div>
+<script src="js/zepto.min.js"></script>
+<script src="js/mggScrollImg.js"></script>
+<script>
+(function(){
+/*
+    注意：$.mggScrollImg返回的scrollImg对象上有
+            next，prev，go三个方法，可以实现外部对滚动索引的控制。
+    如：scrollImg.next();//会切换到下一张图片
+        scrollImg.go(0);//会切换到第一张图片
+*/
+var scrollImg = $.mggScrollImg('.imgbox ul',{
+        loop : true,//循环切换
+        auto : true,//自动切换
+        callback : function(ind){//这里传过来的是索引值
+            $('#page').text(ind+1);
+        }
+    });
+})()
+</script>
+</body>
+</html>
