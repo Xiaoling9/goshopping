@@ -2,6 +2,7 @@ body,html{
     width: 100%;
     overflow:-Scroll;
     overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
 }
 body,html,div,ul,li{margin:0;padding:0;}
 @media screen and (min-width:240px) {
@@ -36,7 +37,9 @@ li{float:left;width:28rem;height:16.5rem;overflow:hidden;text-align:center;}
 div.imgbox ul li img{width:28rem;height:16.5rem;}
 #page{color:red;}
 
-
+.linka{
+    display: block;
+}
 
 .flexcontainer{
     display:flex;
@@ -73,13 +76,54 @@ div.imgbox ul li img{width:28rem;height:16.5rem;}
     margin:1rem 1rem 1rem 1rem;
     /*width: 100%;*/
     height: 4rem;
-    padding:1.5rem 0.5rem 0.5rem 1.5rem;
+   /* padding:1rem 0.5rem 0.5rem 1.5rem;*/
+   /* border: 1rem slide red;*/
 
 }
 .pi-head{
-    width: 3rem;
-    height: 3rem;
+    width: 3.5rem;
+    height: 3.5rem;
     background-color: white;
     border-radius: 50px;
-    border:0px 0px 1px 0px;
+    overflow: hidden;
+  /*  flex:1;*/
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+.pi-info{
+    flex:8;
+}
+.pi-title{
+    padding-left:2rem;
+    font-size: 1.2rem;
+    padding-top: 0.7rem;
+}
+.pi-name{
+    padding-left: 2rem;
+    font-size: 1rem;
+    color: #666;
+    letter-spacing: 0.1rem;
+    margin-top: 0.5rem;
+}
+.rowline{
+    margin-top: 2rem auto;
+    width: 28rem;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+}
+.data-list{
+    height: 3rem;
+}
+.test{
+    width: 20px;
+    height: 10px;
+    background-color: red;
+}
+.dataposi{
+    margin-top: 1rem;
+}
+.sharepic{
+    width: 100%;
+    height: 20rem;
+    overflow: hidden;
 }
