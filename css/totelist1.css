@@ -52,7 +52,7 @@ body,html,div,ul,li{margin:0;padding:0;}
     margin-top: 1rem;
     margin-left: 1rem;
     float: left;
-     overflow: hidden;
+    overflow: hidden;
 }
 .moreposi{
     width: 1.7rem;
@@ -73,9 +73,19 @@ body,html,div,ul,li{margin:0;padding:0;}
 }
 .rowline{
     margin-top: 3rem;
-    width: 28rem;
+    width: 85%;
     border-top:0.1rem solid #DFDADA;
     margin-left: 2rem;
-    margin-right: 
+    /*margin-right: 1rem;*/
 
+}
+.ds-classify{
+    width: 100%;
+}
+a{
+    text-decoration: none;
+}
+/*彩妆分类每一行的第一张图片*/
+.ds-one{
+    margin-left: 3rem;
 }
