@@ -974,7 +974,7 @@ legend,.ui-input-text input,.ui-input-search input {
 	background-color: #fff;
 	color: #333;
 	text-shadow: 0 1px 0 #eee;
-	font-weight: 700;
+	font-weight: 300;
 }
 
 .ui-bar-a {
@@ -1003,7 +1003,7 @@ legend,.ui-input-text input,.ui-input-search input {
 
 .ui-page-theme-a a,html .ui-bar-a a,html .ui-body-a a,html body .ui-group-theme-a a {
 	color: #38c;
-	font-weight: 700;
+	font-weight: 300;
 }
 
 .ui-page-theme-a a:visited,html .ui-bar-a a:visited,html .ui-body-a a:visited,html body .ui-group-theme-a a:visited {
@@ -1358,6 +1358,7 @@ body.ui-mobile-viewport,div.ui-mobile-viewport {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1em;
+	font-weight: 300;
 }
 
 .ui-footer .ui-title {
