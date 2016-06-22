@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>我的</title>
+	<link rel="stylesheet" href="../css/jquery.mobile-2.4.5.min.css">
+	<script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+	<div data-role="page" id="pageone" >
+		<div data-role="header" data-position="fixed">
+		<a href="#" data-role="button" data-shadow="false"style="color:#FC5FA8;background-color:#fff;border-color:#fff;border-radius:100%">添加</a>
+		<h2>个人中心</h2> 
+		<a href="#pagetwo" data-role="button" data-shadow="false"style="color:#FC5FA8;border-color:#fff;border-radius:100%">设置</a>
+		</div>
+		<div data-role="content" style="background-color:#fff;">
+		
+		<div data-role="controlgroup" data-type="horizontal"style="margin:33px 0 0 125px;" >
+				<a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">心得</a>
+				<a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">点评</a>
+				<a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">关注</a>
+				<a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">粉丝</a>
+		</div>
+		
+		<ul data-role="listview" data-inset="true" >
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/1.png"alt="签到"class="ui-li-icon">签到</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/2.png"alt="消息"class="ui-li-icon">消息</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/3.png"alt="欲望清单"class="ui-li-icon">欲望清单</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/4.png"alt="我的收藏"class="ui-li-icon">我的收藏</a>
+			</li>
+			</ul>
+			<ul data-role="listview" data-inset="true" >
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/5.png"alt="我的订单"class="ui-li-icon">我的订单</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/6.png"alt="优惠券"class="ui-li-icon">优惠券</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/7.png"alt="兑换码、邀请码"class="ui-li-icon">兑换码、邀请码</a>
+			</li>
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/8.png"alt="意见反馈"class="ui-li-icon">意见反馈</a>
+			</li>
+			</ul>
+			<ul data-role="listview" data-inset="true" >
+			<li>
+				<a href="#" style="color:#666;"><img src="../img/9.png"alt="致用户的一封信"class="ui-li-icon">致用户的一封信</a>
+			</li>
+		</ul>
+		<div data-role="footer"data-position="fixed"></div>
+		</div>
+		
+	</div>
+	<div data-role="page" id="pagetwo">
+		<div data-role="header"data-position="fixed">
+			<a href="#pageone" data-role="button" data-shadow="false" data-mini="true" style="border-radius:100%;color:#FC5FA8;border-color:#fff;">返回</a>
+			<h2>设置</h2>
+		</div>
+		<div data-role="content" style="background-color:#fff;">
+			<ul data-role="listview" data-inset="true">
+				<li>
+					<a href="#" style="color:#666;">我的账户</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">关于我们</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">联系我们</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">致用户的一封信</a>
+				</li>
+				</ul>
+				<ul data-role="listview" data-inset="true">
+				<li>
+					<a href="#" style="color:#666;">用户协议</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">清除缓存</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">评价一下下</a>
+				</li>
+				<li>
+					<a href="#" style="color:#666;">肤质测试</a>
+				</li>
+				</ul>
+				<ul data-role="listview" data-inset="true">
+				<li>
+					<a href="#pagethr"data-role="button" data-rel="dialog" style="color:#FC629D">退出登录</a>
+				</li>	
+			</ul>
+		</div>
+	</div>
+	</div>
+	<div data-role="page" id="pagethr"style="width:70%;color:#999;left:40px;margin:120px 20px">
+		<div data-role="header" style="background-color:#F93AA2;color:#FFFFFF;">
+			<h1>美妆秘密</h1>
+		</div>
+		<div data-role="content" >
+			<h4>亲爱的主人，你真的要退出了吗？(╯﹏╰)</h4>
+			<div data-role="controlgroup" data-type="horizontal">
+			<a href="#" data-role="button" data-mini="true" data-shadow="false" style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:30px;">确定</a>
+			<a href="#pagetwo" data-role="button" data-mini="true" data-shadow="false"data-transition="pop"style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:80px;">取消</a>
+			</div>
+		</div>
+		
+	</div>
+</body>
+</html>
