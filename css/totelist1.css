@@ -85,7 +85,7 @@ body,html,div,ul,li{margin:0;padding:0;}
 a{
     text-decoration: none;
 }
-/*彩妆分类每一行的第一张图片*/
+/*每一行的第一张图片*/
 .ds-one{
     margin-left: 3rem;
 }
