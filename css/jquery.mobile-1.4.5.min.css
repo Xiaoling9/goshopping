@@ -806,6 +806,7 @@ html {
 
 body,input,select,textarea,button,.ui-btn {
 	font-size: 1em;
+	/*font-family: "Microsoft YaHei";*/
 	font-family: sans-serif;
 	line-height: 1.3;
 }

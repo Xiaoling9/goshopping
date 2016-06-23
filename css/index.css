@@ -107,9 +107,10 @@ div.imgbox ul li img{width:28rem;height:16.5rem;}
 }
 .rowline{
     margin-top: 2rem auto;
-    width: 28rem;
+    /*width: 26rem;*/
     border-top:0.1rem solid #DFDADA;
     margin-left: 2rem;
+    margin-right: 2rem;
 }
 .data-list{
     height: 3rem;
