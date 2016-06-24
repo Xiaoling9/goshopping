@@ -13,16 +13,26 @@
 	<meta name="description" content="seodescription"/>
 	<link rel="stylesheet" href="../css/login.css">
 	<script type="text/javascript">
-		function login(){
-			var userName=document.getElementById("userName").value;
-			var pwd=document.getElementById("pwd").value;
-			var matchResult=true;
-			if(userName=""||pwd=""){
-				alert("请填写完整！");
-				matchResult=false;
+		// var userName=document.getElementById("userName").value;
+		// var pwd=document.getElementById("pwd").value;
+		var check=function(){
+			if(!document.getElementById("userName").checkValidity()){
+				document.getElementById("userName").setCustomValidity("用户名格式不正确！");
 			}
-			else if(userName.)
+			if(!document.getElementById("pwd").checkValidity()){
+				document.getElementById("pwd").setCustomValidity("密码长度为6~16个字符！")
+			}
 		}
+		// function login(){
+		// 	var userName=document.getElementById("userName").value;
+		// 	var pwd=document.getElementById("pwd").value;
+		// 	var matchResult=true;
+		// 	if(userName=""||pwd=""){
+		// 		alert("请填写完整！");
+		// 		matchResult=false;
+		// 	}
+		// 	else if(userName.)
+		// }
 	</script>
 </head>
 <body>
@@ -44,18 +54,23 @@
 		</div> -->
 	</div>
 	<!-- 注册部分 -->
-	<div class="registerbox">
-		<div class="rowline"></div>
-		<div class="namebox">
-			<input type="text" class="inputbox" placeholder="昵称" id="userName">
+	<form action="ttw.html">
+		<div class="registerbox">
+			<!-- <div class="rowline"></div> -->
+			<div class="namebox">
+				<input type="text" class="inputbox" placeholder="昵称" id="userName" required pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+"/>
+			</div>
+			<div class="rowline"></div>
+			<div class="password">
+				<input type="password" class="inputbox" placeholder="请输入密码" id="pwd" required pattern="^[\w\W]{6,16}$">
+			</div>
 		</div>
-		<div class="rowline"></div>
-		<div class="password">
-			<input type="password" class="inputbox" placeholder="请输入密码" id="pwd">
+		<div class="forgetpwd">
+			<P style="float:right;">忘记密码？</P>
 		</div>
-	</div>
-	<div class="buttonbox">
-		<button class="buttontext" type="submit">立即登录</button>
-	</div>
+		<div class="buttonbox">
+			<button class="buttontext" type="submit">立即登录</button>
+		</div>
+	</form>
 </body>
 </html>

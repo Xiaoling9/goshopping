@@ -47,12 +47,12 @@ body,html,div,ul,li{margin:0;padding:0;}
     margin-bottom: 4rem;
 }
 .backposi{
-    width: 1.7rem;
+    width:3.6rem;
     height: 1.7rem;
     margin-top: 1rem;
     margin-left: 1rem;
     float: left;
-    overflow: hidden;
+     overflow: hidden;
 }
 .moreposi{
     width: 1.7rem;
@@ -62,30 +62,70 @@ body,html,div,ul,li{margin:0;padding:0;}
     margin-right: 2rem;
     margin-top: 1rem;
 }
-/*空白横条*/
-.blackspace{
+/*大赏图片及文字*/
+.linka{
+    display: block;
+}
+.cont{
     width: 100%;
-    height: 1rem;
-    background-color: #EFE4E4;
-}
-.toppic{
+    height: auto;
     margin-top: 4rem;
+    text-align: center;
 }
-.rowline{
-    margin-top: 3rem;
-    width: 85%;
-    border-top:0.1rem solid #DFDADA;
-    margin-left: 2rem;
-    /*margin-right: 1rem;*/
+.boxlist{
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    background: #FFFAFF;    
+}
+.listleft{
+    overflow: hidden;
+    float: left;
+    width: 35%;
+}
+.listright{
+float: left;
+width: 64%;
+overflow: hidden;
+font-size: 1rem;
 
 }
-.ds-classify{
+.proinfo{
     width: 100%;
+    text-align: center;
+
 }
-a{
-    text-decoration: none;
+.boxlist .listright .proinfo ul{
+    list-style: none;
+    font-size: 0.8rem;
+    width: 100%;
+    margin-left: 0.5rem;
 }
-/*每一行的第一张图片*/
-.ds-one{
-    margin-left: 3rem;
+.boxlist .listright .proinfo ul li{
+    display: inline-block;
+    border-right: 1px dotted #aeb0b2;
+    text-align: center;
+    list-style: none;
+    padding: 0.2rem;
+    width: 4.4rem;
 }
+
+.boxlist .listright .proinfo ul li b{
+    color: #eb215a;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+.btn{
+      text-align: center;
+    margin: 0.5rem;}
+.btn a {
+        display: inline-block;
+        width: 5rem;
+        background: #eb215a;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none; 
+    }
+    

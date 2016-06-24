@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>我的</title>
-	<link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/jquery.mobile-2.4.5.min.css">
 	<script src="../js/jquery-1.11.3.min.js"></script>
     <script src="../js/jquery.mobile-1.4.5.min.js"></script>
     <style>
@@ -65,13 +65,21 @@
 			margin-top: 0px;
 			height: 0px;
 		}
+		.headpart{
+			margin-top: 2rem;
+		}
 		
     </style>
 </head>
 <body>
 	<div data-role="page" id="pageone" >
+<!-- <<<<<<< HEAD -->
 		<div data-role="header" data-position="fixed" height="50px">
 		<a href="../index.html" data-role="button" data-shadow="false"style="color:#FC5FA8;border-color:#fff;border-radius:100%" data-ajax="false">返回</a>
+<!-- ======= -->
+		<!-- <div data-role="header" data-position="fixed">
+		<a href="#" data-role="button" data-shadow="false"style="color:#FC5FA8;background-color:#fff;border-color:#fff;border-radius:100%">添加</a> -->
+<!-- >>>>>>> 1f022e852c5f0e6c07879ebdef36e00fcb547058 -->
 		<h2>个人中心</h2> 
 		<a href="#pagetwo" data-role="button" data-shadow="false"style="color:#FC5FA8;border-color:#fff;border-radius:100%">设置</a>
 		</div>
@@ -171,11 +179,24 @@
 				</ul>
 				<ul data-role="listview" data-inset="true">
 				<li>
-					<a href="#" style="color:#FC629D">退出登录</a>
+					<a href="#pagethr"data-role="button" data-rel="dialog" style="color:#FC629D">退出登录</a>
 				</li>	
 			</ul>
 		</div>
 	</div>
+	</div>
+	<div data-role="page" id="pagethr"style="width:70%;color:#999;left:40px;margin:120px 20px">
+		<div data-role="header" style="background-color:#F93AA2;color:#FFFFFF;">
+			<h1>美妆秘密</h1>
+		</div>
+		<div data-role="content" >
+			<h4>亲爱的主人，你真的要退出了吗？(╯﹏╰)</h4>
+			<div data-role="controlgroup" data-type="horizontal">
+			<a href="#" data-role="button" data-mini="true" data-shadow="false" style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:30px;">确定</a>
+			<a href="#pagetwo" data-role="button" data-mini="true" data-shadow="false"data-transition="pop"style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:80px;">取消</a>
+			</div>
+		</div>
+		
 	</div>
 </body>
 </html>
