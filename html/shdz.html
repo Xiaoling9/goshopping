@@ -77,10 +77,16 @@ body,html,div,ul,li{margin:0;padding:0;}
     margin-top: 1rem;
 }
 .bl{
-	vertical-align: text-bottom;
 	width: 100%;
-	height: 2.5rem;
+	height: 1.5rem;
 	border-bottom: 2px solid #aeb0b2;
+	padding: 1rem;
+	background-color: #FFfAFd;
+}
+span{
+	vertical-align: text-bottom;
+	font-size: 1.2rem;
+	font-weight: 600;
 }
 input{
 	border: none;
@@ -104,15 +110,24 @@ input{
 		</div>
 	</div>
 	<!-- end header -->
-	<div style="margin-top:3rem;">
+	<div style="margin-top:2.8rem;">
 		<form method="post" action="#">
 			<div class="bl">
-				收货人姓名：<input type="text" name="kehuname" id="kehuname" />
+				<span>收货人姓名:</span><input type="text" name="kehuname" id="kehuname" />
 			</div>
 			<div class="bl">
-			手机号码：<input type="text" name="tel">
+				<span>手机号码&nbsp&nbsp&nbsp:</span><input type="text" name="tel" />
 			</div>
-			<div class="bl"></div>
+			<div class="bl">
+				<span>所在地区&nbsp&nbsp&nbsp:</span><input type="text" name="address" />
+			</div>
+			<div class="bl">
+				<span>街道地址&nbsp&nbsp&nbsp:</span><input type="text" name="jdaddress" />
+			</div>
+			<div class="bl">
+				<span>邮政编码&nbsp&nbsp&nbsp:</span><input type="text" name="zipcode" />
+			</div>
+
 		</form>
 	</div>
 </body>
