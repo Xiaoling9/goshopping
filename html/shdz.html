@@ -76,21 +76,58 @@ body,html,div,ul,li{margin:0;padding:0;}
     margin-right: 2rem;
     margin-top: 1rem;
 }
+.bl{
+	width: 100%;
+	height: 1.5rem;
+	border-bottom: 2px solid #aeb0b2;
+	padding: 1rem;
+	background-color: #FFfAFd;
+}
+span{
+	vertical-align: text-bottom;
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+input{
+	border: none;
+}
 	</style>
+}
+}
 </head>
-<body>
-	<div class="header">
-		<div class="backposi">
-			<a href="../index.html" class="linka">
-				<img src="../img/back.png" alt="返回" width="100%">
-			</a>
+<body>		
+	<form method="post" action="#">
+
+		<div class="header">
+			<div class="backposi">
+				<a href="../index.html" class="linka">
+					<img src="../img/back.png" alt="返回" width="100%">
+				</a>
+			</div>
+			<div class="totetext"></div>
+			<div class="moreposi"> 
+				<a href="#" class="linka">
+					<img src="../img/tijiao.jpg" alt="提交" width="100%">
+				</a>
+			</div>
 		</div>
-		<div class="totetext"></div>
-		<div class="moreposi"> 
-			<a href="#" class="linka">
-				<img src="../img/more.png" alt="更多" width="100%">
-			</a>
+		<!-- end header -->
+		<div style="margin-top:2.8rem;">
+				<div class="bl">
+					<span>收货人姓名:</span><input type="text" name="kehuname" id="kehuname" />
+				</div>
+				<div class="bl">
+					<span>手机号码&nbsp&nbsp&nbsp:</span><input type="text" name="tel" />
+				</div>
+				<div class="bl">
+					<span>所在地区&nbsp&nbsp&nbsp:</span><input type="text" name="address" />
+				</div>
+				<div class="bl">
+					<span>街道地址&nbsp&nbsp&nbsp:</span><input type="text" name="jdaddress" />
+				</div>
+				<div class="bl">
+					<span>邮政编码&nbsp&nbsp&nbsp:</span><input type="text" name="zipcode" />
+				</div>
 		</div>
-	</div>
-	
+	c</form>
 </body>
