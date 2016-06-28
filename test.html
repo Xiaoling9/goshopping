@@ -1,0 +1,32 @@
+<DOCTYPE html>
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<meta charset="UTF-8">
+<style>
+	.nav{height:40px; width: 100%;background: #E6E6E6;
+		background-image: url("img/home2.png") no-repeat;
+		}
+	.nav ul li{float: left;list-style: none;margin-right: 20px;line-height: 40px;}
+	.nav ul li a{text-decoration: none; display: block;width: 60px; text-align: center;}
+	.onNav{background-image: url("img/eye.png") no-repeat;}
+	/*#nav1 a:link{background:url("img/eye.png") no-repeat;}
+	#nav1 a:visited{background:url("img/good.png") no-repeat;}*/
+</style>
+</head>
+<body>
+	<div class="nav">
+		<ul>
+			<li id="nav1"><a href="#" class="onNav"><!-- <img src="img/eye.png" alt="1" width="100%"> -->123</a></li>
+			<li><a href="#">博客</a></li>
+			<li><a href="#">论坛</a></li>
+			<li><a href="#">关于</a></li>
+			<li><a href="#">联系</a></li>
+		</ul>
+	</div>
+<script type="text/javascript">
+	$(".nav ul li a").click(function(){if($(this).has(".onNav")){
+	$(this).addClass("onNav").parent("li").siblings("li").find("a").removeClass("onNav");}})
+</script>
+</body>
+</html>
