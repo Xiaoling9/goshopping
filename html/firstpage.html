@@ -20,15 +20,16 @@
         <li><a href="#"><img src="../img/2.jpg" width="100%"></img></a></li>
         <li><a href="#"><img src="../img/4.jpg" width="100%"></img></a></li>
     </ul>
+    <a href="../html/searchpart.html"><img src="../img/fp-search.png" class="fp-search"></a>
 </div>
 <!-- 首页按钮 -->
 <div class="flexcontainer menubox">
     <div class="flex-item">
-        <a href="#"><img src="../img/menu1.png" alt="产品库" width="55rem"></a>
+        <a href="../html/searchpart.html"><img src="../img/menu1.png" alt="产品库" width="55rem"></a>
     </div>
-    <div class="flex-item">
+    <!-- <div class="flex-item">
         <a href="#"><img src="../img/menu2.png" alt="学习化妆" width="55rem"></a>
-    </div>
+    </div> -->
     <div class="flex-item">
         <a href="../html/test.html"><img src="../img/menu3.png" alt="产品试用" width="55rem"></a>
     </div>
@@ -57,7 +58,7 @@
     <!-- 数据 -->
     <div class="flexcontainer data-list">
         <div class="flex-item dataposi">
-            <a href="#" class="linka"><img src="img/eye.png" alt=""></a>
+            <a href="#" class="linka"><img src="../img/eye.png" alt=""></a>
         </div>
         <div class="flex-item dataposi">
              <a href="#" class="linka"><img src="../img/good.png" alt=""></a>
@@ -106,21 +107,30 @@
 <!-- 脚部footer -->
 <div class="footer flexcontainer">
     <div class="flex-item">
-        <a href="../html/login.html"><img src="../img/home2.png" alt="首页" width="20rem"></a>
+        <div class="buttonbox buttonbox1" >
+             <a id="a1" class="buttononNav"><!-- <img src="../img/home2.png" alt="首页" width="20rem" class="homeimg"> --></a>
+        </div>
     </div>
     <div class="flex-item">
-          <a href="../html/register.html"><img src="../img/home2.png" alt="首页" width="20rem"></a>
+        <div class="buttonbox buttonbox2" >
+            <a><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+        </div>
     </div>
     <div class="flex-item">
-       <a href="../html/gsp.html"><img src="../img/home2.png" alt="首页" width="20rem"></a>
+        <div class="buttonbox buttonbox3">
+            <a><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+        </div>
     </div>
     <div class="flex-item">
-        <a href="../html/ttw.html"><img src="../img/home2.png" alt="首页" width="20rem"></a>
+        <div class="buttonbox buttonbox4">
+             <a><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+        </div>
     </div>
 </div>
 <script src="../js/zepto.min.js"></script>
 <script src="../js/mggScrollImg.js"></script>
 <script>
+
 (function(){
 /*
     注意：$.mggScrollImg返回的scrollImg对象上有
@@ -128,14 +138,21 @@
     如：scrollImg.next();//会切换到下一张图片
         scrollImg.go(0);//会切换到第一张图片
 */
-var scrollImg = $.mggScrollImg('.imgbox ul',{
-        loop : true,//循环切换
-        auto : true,//自动切换
-        callback : function(ind){//这里传过来的是索引值
-            $('#page').text(ind+1);
-        }
+    var scrollImg = $.mggScrollImg('.imgbox ul',{
+            loop : true,//循环切换
+            auto : true,//自动切换
+            callback : function(ind){//这里传过来的是索引值
+                $('#page').text(ind+1);
+            }
+        });
+    })()
+          
+    $(".footer .flex-item .buttonbox a").click(function() {
+
+    $(".footer .flex-item .buttonbox a").removeClass("buttononNav");
+        $(this).addClass("buttononNav");
     });
-})()
+    
 </script>
 </body>
 </html>s

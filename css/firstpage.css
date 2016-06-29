@@ -30,15 +30,30 @@ body,html,div,ul,li{margin:0;padding:0;}
         font-size:36px;
     }
 }
-div.imgbox{width:28rem;height:16.5rem;overflow:hidden;margin:0 auto;}
+div.imgbox{width:28rem;height:16.5rem;overflow:hidden;margin:0 auto;
+    
+}
 div.imgbox ul{clear:both;width:75rem;}
 div.imgbox ul 
 li{float:left;width:28rem;height:16.5rem;overflow:hidden;text-align:center;}
 div.imgbox ul li img{width:28rem;height:16.5rem;}
+div.imgbox a{
+    text-decoration: none;
+}
+div.imgbox .fp-search{
+    display: block;
+    position:absolute;
+    z-index: 999;     /*设置搜索框固定在轮播图的上面*/
+    margin-top: 13rem;
+    margin-left: 0.2rem;
+}
+
 #page{color:red;}
 
 .linka{
     display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .flexcontainer{
@@ -47,7 +62,10 @@ div.imgbox ul li img{width:28rem;height:16.5rem;}
 }
 .flex-item{
     flex:1;
-    text-align: center; 
+    text-align: center;
+  /*  width: 3rem;
+    height: 3rem;*/ 
+    /*padding: 3rem;*/
 }
 .footer{
     border-top:0.07rem solid #B9B7B7;
@@ -58,12 +76,68 @@ div.imgbox ul li img{width:28rem;height:16.5rem;}
     width: 100%;
     height: 4rem;
     line-height: 4rem;
+    /*padding-top: 2rem;*/
+
+    /*padding-bottom: 1rem;*/
+
+
 }
 .menubox{
     height: auto;
     line-height:auto;
 }
+.buttonbox{
+    /*background-color: red;*/
+    width: 3rem;
+    height: 2rem;
+    margin:0 auto;
+    margin-top: 0.5rem;
 
+    /*border: 1px solid black;*/
+    /*bottom: 2rem;*/
+    /*margin:1.5rem;*/
+    /*margin-bottom:2rem;*/
+    /*padding-bottom: 3rem;*/
+}
+.buttonbox a{
+    display: block;
+    width: 3rem;
+    height: 2.3rem;
+    line-height: 2rem;
+    display: inline-block;
+    background-size: 2.7rem 5rem;
+    /*overflow: display;*/
+}
+/*.buttonbox a{
+    display:block;
+    background-image:url(../img/home.png) no-repeat center; 
+}*/
+.buttonbox1 a{
+    background-image: url(../img/home.png);
+    background-repeat: repeat-y;
+}
+.buttonbox2 a{
+    background-image: url(../img/product.png);
+    background-repeat: repeat-y;
+
+}
+.buttonbox3 a{
+    background-image: url(../img/user.png);
+    background-repeat: repeat-y;
+
+}
+.buttonbox4 a{
+    background-image: url(../img/time.png);
+    background-repeat: repeat-y;
+
+}
+.buttonoffNav{
+     background-position: 100% 0%;
+}
+
+.buttononNav{
+    background-position:100% 98%; 
+}
 /*空白横条*/
 .blackspace{
     width: 100%;
@@ -73,6 +147,7 @@ div.imgbox ul li img{width:28rem;height:16.5rem;}
 
 /*头像栏*/
 .personinfo{
+    z-index: -1;
     margin:1rem 1rem 1rem 1rem;
     /*width: 100%;*/
     height: 4rem;
