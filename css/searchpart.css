@@ -39,7 +39,7 @@ body,html,div,ul,li{margin:0;padding:0;}
 }
 .partone .se-now{
     display: block;
-    width: 70%;
+    width: 80%;
     height: 100%;
     padding-left: 0.5rem;
     float: left;
@@ -56,7 +56,7 @@ body,html,div,ul,li{margin:0;padding:0;}
     border-radius: 4px;
     color: #fff;
     margin-top: 0.9rem;
-    margin-left: 19.7rem;
+    margin-left: 22rem;
     text-align: center;
     padding-top: 0.3rem;
     /*border: 1px solid blue;*/

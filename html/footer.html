@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>去淘宝</title>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta content="telephone=no" name="format-detection" />
+	<meta name="keywords" content="seokeywords"/>
+	<meta name="description" content="seodescription"/>
+	<link rel="stylesheet" href="../css/firstpage.css">
+	<title>首页</title>
+</head>
+<body>
+	<!-- 固定脚部 -->
+	<div class="footer flexcontainer">
+        <div class="flex-item">
+            <div class="buttonbox buttonbox1" >
+                 <a href="firstpage.html" class="buttononNav" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem" class="homeimg"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox2" >
+                <a href="searchpart.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox3">
+                <a href="login.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox4">
+                 <a href="ttw.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+    </div>
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/mggScrollImg.js"></script>
+    <script>
+    	$(".footer .flex-item .buttonbox a").click(function() {
+
+    	$(".footer .flex-item .buttonbox a").removeClass("buttononNav");
+    	    $(this).addClass("buttononNav");
+    	});
+    </script>
+</body>
+</html>
