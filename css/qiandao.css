@@ -1,0 +1,121 @@
+/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+ul li{
+    list-style: none;
+}
+/*标签连接*/
+.linka{
+    display: block;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width:1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+     overflow: hidden;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+/*大赏图片及文字*/
+.linka{
+    display: block;
+}
+.qiandao-box{
+    width: 100%;
+    margin-top: 4rem;
+    background: #FFFAF7;
+}
+.qiandao-top{
+    width: 100%;
+    height: 3rem;
+}
+.current-date{
+    float: left;
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    width: 50%;
+    text-align: center;
+}
+.just-qiandao{
+    float: left;
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+#qiandao{
+    position: absolute;
+    width: 0;
+    opacity: 0.8;
+    height: 0;
+    margin-top: 7rem;
+    // left: 50%;
+    z-index: 2
+}
+#qiandaocg{
+    position: absolute;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 3.5rem;
+    background: red;
+    margin-left:-6rem;
+    top :15rem;
+    // vertical-align: middle;
+   // display: none;
+   text-align: center;
+}
+.cg{
+    margin-top: 40%;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
