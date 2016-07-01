@@ -122,7 +122,7 @@ div.imgbox .fp-search{
 
 }
 .buttonbox3 a{
-    background-image: url(../img/time.png);
+    background-image: url(../img/share.png);
     background-repeat: repeat-y;
 
 }
@@ -136,7 +136,7 @@ div.imgbox .fp-search{
 }
 
 .buttononNav{
-    background-position:100% 88%; 
+    background-position:80% 88%; 
 }
 /*空白横条*/
 .blackspace{
