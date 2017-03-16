@@ -12,31 +12,8 @@
 	<meta name="keywords" content="seokeywords"/>
 	<meta name="description" content="seodescription"/>
 	<link rel="stylesheet" href="../css/login.css">
-	<script type="text/javascript">
-		// var userName=document.getElementById("userName").value;
-		// var pwd=document.getElementById("pwd").value;
-		var check=function(){
-			if(!document.getElementById("userName").checkValidity()){
-				document.getElementById("userName").setCustomValidity("用户名格式不正确！");
-			}
-			if(!document.getElementById("pwd").checkValidity()){
-				document.getElementById("pwd").setCustomValidity("密码长度为6~16个字符！")
-			}
-		}
-		// function login(){
-		// 	var userName=document.getElementById("userName").value;
-		// 	var pwd=document.getElementById("pwd").value;
-		// 	var matchResult=true;
-		// 	if(userName=""||pwd=""){
-		// 		alert("请填写完整！");
-		// 		matchResult=false;
-		// 	}
-		// 	else if(userName.)
-		// }
-	</script>
 </head>
 <body>
-	<!-- 头部 -->
 	<div class="header">
 		<div class="backposi">
 			<a href="../html/firstpage.html" class="linka">
@@ -45,32 +22,29 @@
 		</div>
 		<div class="headerbox">
 		登录
-			<!-- <p class="header-text">去淘宝口碑排名</p> -->
 		</div>
-		<!-- <div class="moreposi">
-			<a href="#" class="linka">
-				<img src="../img/more.png" alt="更多" width="100%">
-			</a>
-		</div> -->
 	</div>
-	<!-- 注册部分 -->
-	<form action="ttw.html">
+	<form>
 		<div class="registerbox">
-			<!-- <div class="rowline"></div> -->
 			<div class="namebox">
-				<input type="text" class="inputbox" placeholder="昵称" id="userName" required pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+"/>
+				<input type="text" class="inputbox" placeholder="用户名" id="userName" required = "required" pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+" title ="用户名格式不正确"/>
 			</div>
 			<div class="rowline"></div>
 			<div class="password">
-				<input type="password" class="inputbox" placeholder="请输入密码" id="pwd" required pattern="^[\w\W]{6,16}$">
+				<input type="password" class="inputbox" placeholder="请输入密码" id="pwd" required = "required" pattern="^[\w\W]{6,16}$" title="密码长度为6~16个字符">
 			</div>
 		</div>
 		<div class="forgetpwd">
 			<P style="float:right;">忘记密码？</P>
 		</div>
 		<div class="buttonbox">
-			<button class="buttontext" type="submit">立即登录</button>
+			<input type="submit" onclick="checkUser();" value="立即登录" class="buttontext">
 		</div>
 	</form>
+	<!-- <button style="width:100px;height:30px" onclick="checkUser();"></button> -->
+	<script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
+	<script src="../js/bmob-min.js"></script>
+	<script src="../js/bmobSocketIo-min.js"></script>
+	<script src ="../js/login.js"></script>
 </body>
 </html>

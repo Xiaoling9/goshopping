@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/bmob-min.js"></script>
+		<script type="text/javascript">
+			Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+			function bmobClick(){
+				alert("xixi")
+				var user = new Bmob.User();
+				user.set("username", "my name");
+				user.set("password", "my pass");
+				user.set("email", "email@example.com");
+				user.set("phone", "415-392-0202");
+				user.signUp(null, {
+  					success: function(user) {
+  						alert("chenggong");
+  					},
+ 					 error: function(user, error) {
+    					alert("Error: " + error.code + " " + error.message);
+ 					}
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<button onclick="bmobClick()" style="width:100px;height: 30px;">按钮</button>
+	</body>
+</html>
