@@ -25,7 +25,7 @@
 		注册
 		</div>
 	</div>
-	<form>
+	<div>
 		<div class="registerbox">
 			<div class="emailbox">
 				<input type="text" id="email" class="inputbox" placeholder="请输入邮箱" required="required" pattern="\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}"/ title="邮箱格式不正确">
@@ -44,9 +44,9 @@
 			</div>
 		</div>
 		<div class="buttonbox">
-				<input type="submit" onclick="checkRegisterinfo();" value="立即注册" class="buttontext">
+				<button onclick="checkRegisterinfo();" class="buttontext">立即注册</button>
 		</div>
-	</form>
+	</div>
 	<script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
 	<script src="../js/bmob-min.js"></script>
 	<script src="../js/bmobSocketIo-min.js"></script>

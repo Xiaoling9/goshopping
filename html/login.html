@@ -24,7 +24,7 @@
 		登录
 		</div>
 	</div>
-	<form>
+	<div>
 		<div class="registerbox">
 			<div class="namebox">
 				<input type="text" class="inputbox" placeholder="用户名" id="userName" required = "required" pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+" title ="用户名格式不正确"/>
@@ -38,9 +38,9 @@
 			<P style="float:right;">忘记密码？</P>
 		</div>
 		<div class="buttonbox">
-			<input type="submit" onclick="checkUser();" value="立即登录" class="buttontext">
+			<button type="submit" onclick="checkUser();" class="buttontext">立即登录</button>
 		</div>
-	</form>
+	</div>
 	<!-- <button style="width:100px;height:30px" onclick="checkUser();"></button> -->
 	<script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
 	<script src="../js/bmob-min.js"></script>
