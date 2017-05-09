@@ -1,0 +1,3354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>去淘宝</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta name="keywords" content="seokeywords"/>
+    <meta name="description" content="seodescription"/>
+    <link rel="stylesheet" href="css/index.css">
+    <!--5秒钟后跳转到指定的页面--> 
+    <meta http-equiv="refresh" content="3;url=html/firstframe.html" /> 
+
+</head>
+<body>
+    <!-- <div class="imgbox"> -->
+       <div class="imgbox1">
+           <img src="img/index.png" alt="首页美妆图片广告" height="100%" width="100%">
+       </div>
+</body>
+   <script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
+  <script src="js/bmob-min.js"></script>
+  <script src="js/bmobSocketIo-min.js"></script>
+  <script src="js/register.js" type="text/javascript"></script>
+  <script >
+    Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+    BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
+
+    </script> 
+</html>
+Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
+
+function checkUser(){
+  // alert("xixi");
+  var userName = $("#userName").val();
+  var pwd = $("#pwd").val();
+  Bmob.User.logIn(userName, pwd, {
+    success: function(user) {
+      alert("登录成功");
+      var currentUser = Bmob.User.current();
+      if (currentUser) {
+         window.location.href="firstpage.html";
+      }
+      //  else {
+      //     // show the signup or login page
+      // }
+   
+    },
+    error: function(user, error) {
+      alert("登录失败");
+      alert("Error" + error.code + "" + error.message);
+    }
+  });
+
+}(function($){
+/*
+    图片滚动效果
+    add  2014-05-14 by  js明哥哥
+    博客地址：http://home.cnblogs.com/u/huzhiming/
+    @jQuery or @String box : 滚动列表jQuery对象或者选择器 如：滚动元素为li的外层ul
+    @object config : {
+            @Number width : 一次滚动宽度，默认为box里面第一个一级子元素宽度[如果子元素宽度不均匀则滚动效果会错乱]
+            @Number size : 列表长度，默认为box里面所有一级子元素个数[如果size不等于一级子元素个数，则不支持循环滚动]
+            @Boolean loop : 是否支持循环滚动 默认 true
+            @Boolean auto : 是否自动滚动,支持自动滚动时必须支持循环滚动，否则设置无效,默认为true
+            @Number auto_wait_time : 自动轮播一次时间间隔,默认为：3000ms
+            @Function callback : 滚动完回调函数，参入一个参数当前滚动节点索引值
+        }
+*/
+function mggScrollImg(box,config){
+    this.box = $(box);
+    this.config = $.extend({},config||{});
+    this.width = this.config.width||this.box.children().eq(0).width();//一次滚动的宽度
+    this.size = this.config.size||this.box.children().length;
+    this.loop = this.config.loop||true;//默认能循环滚动
+    this.auto = this.config.auto||true;//默认自动滚动
+    this.auto_wait_time = this.config.auto_wait_time||3000;//轮播间隔
+    this.scroll_time = 300;//滚动时长
+    this.minleft = -this.width*(this.size-1);//最小left值，注意是负数[不循环情况下的值]
+    this.maxleft =0;//最大lfet值[不循环情况下的值]
+    this.now_left = 0;//初始位置信息[不循环情况下的值]
+    this.point_x = null;//记录一个x坐标
+    this.point_y = null;//记录一个y坐标
+    this.move_left = false;//记录向哪边滑动
+    this.index = 0;
+    this.busy = false;
+    this.timer;
+    this.init();
+}
+$.extend(mggScrollImg.prototype,{
+    init : function(){
+        this.bind_event();
+        this.init_loop();
+        this.auto_scroll();
+    },
+    bind_event : function(){
+        var self = this;
+        self.box.bind('touchstart',function(e){
+            if(e.touches.length==1 && !self.busy){
+                self.point_x = e.touches[0].screenX;
+                self.point_y = e.touches[0].screenY;
+            }
+        }).bind('touchmove',function(e){
+            if(e.touches.length==1 && !self.busy){
+                return self.move(e.touches[0].screenX,e.touches[0].screenY);//这里根据返回值觉得是否阻止默认touch事件
+            }
+        }).bind('touchend',function(e){
+            !self.busy && self.move_end();
+        });
+    },
+    /*
+        初始化循环滚动,当一次性需要滚动多个子元素时，暂不支持循环滚动效果,
+        如果想实现一次性滚动多个子元素效果，可以通过页面结构实现
+        循环滚动思路：复制首尾节点到尾首
+    */
+    init_loop : function(){
+        if(this.box.children().length == this.size && this.loop){//暂时只支持size和子节点数相等情况的循环
+            this.now_left = -this.width;//设置初始位置信息
+            this.minleft = -this.width*this.size;//最小left值
+            this.maxleft = -this.width;
+            this.box.prepend(this.box.children().eq(this.size-1).clone()).append(this.box.children().eq(1).clone()).css(this.get_style(2));
+            this.box.css('width',this.width*(this.size+2));
+        }else{
+            this.loop = false;
+            this.box.css('width',this.width*this.size);
+        }
+    },
+    auto_scroll : function(){//自动滚动
+        var self = this;
+        if(!self.loop || !self.auto)return;
+        clearTimeout(self.timer);
+        self.timer = setTimeout(function(){
+            self.go_index(self.index+1);
+        },self.auto_wait_time);
+    },
+    go_index : function(ind){//滚动到指定索引页面
+        var self = this;
+        if(self.busy)return;
+        clearTimeout(self.timer);
+        self.busy = true;
+        if(self.loop){//如果循环
+            ind = ind<0?-1:ind;
+            ind = ind>self.size?self.size:ind;
+        }else{
+            ind = ind<0?0:ind;
+            ind = ind>=self.size?(self.size-1):ind;
+        }
+        if(!self.loop && (self.now_left == -(self.width*ind))){
+            self.complete(ind);
+        }else if(self.loop && (self.now_left == -self.width*(ind+1))){
+            self.complete(ind);
+        }else{
+            if(ind == -1 || ind == self.size){//循环滚动边界
+                self.index = ind==-1?(self.size-1):0;
+                self.now_left = ind==-1?0:-self.width*(self.size+1);
+            }else{
+                self.index = ind;
+                self.now_left = -(self.width*(self.index+(self.loop?1:0)));
+            }
+            self.box.css(this.get_style(1));
+            setTimeout(function(){
+                self.complete(ind);
+            },self.scroll_time);
+        }
+    },
+    complete : function(ind){//动画完成回调
+        var self = this;
+        self.busy = false;
+        self.config.callback && self.config.callback(self.index);
+        if(ind==-1){
+            self.now_left = self.minleft;
+        }else if(ind==self.size){
+            self.now_left = self.maxleft;
+        }
+        self.box.css(this.get_style(2));
+        self.auto_scroll();
+    },
+    next : function(){//下一页滚动
+        if(!this.busy){
+            this.go_index(this.index+1);
+        }
+    },
+    prev : function(){//上一页滚动
+        if(!this.busy){
+            this.go_index(this.index-1);
+        }
+    },
+    move : function(point_x,point_y){//滑动屏幕处理函数
+        var changeX = point_x - (this.point_x===null?point_x:this.point_x),
+            changeY = point_y - (this.point_y===null?point_y:this.point_y),
+            marginleft = this.now_left, return_value = false,
+            sin =changeY/Math.sqrt(changeX*changeX+changeY*changeY);
+        this.now_left = marginleft+changeX;
+        this.move_left = changeX<0;
+        if(sin>Math.sin(Math.PI/3) || sin<-Math.sin(Math.PI/3)){//滑动屏幕角度范围：PI/3  -- 2PI/3
+            return_value = true;//不阻止默认行为
+        }
+        this.point_x = point_x;
+        this.point_y = point_y;
+        this.box.css(this.get_style(2));
+        return return_value;
+    },
+    move_end : function(){
+        var changeX = this.now_left%this.width,ind;
+        if(this.now_left<this.minleft){//手指向左滑动
+            ind = this.index +1;
+        }else if(this.now_left>this.maxleft){//手指向右滑动
+            ind = this.index-1;
+        }else if(changeX!=0){
+            if(this.move_left){//手指向左滑动
+                ind = this.index+1;
+            }else{//手指向右滑动
+                ind = this.index-1;
+            }
+        }else{
+            ind = this.index;
+        }
+        this.point_x = this.point_y = null;
+        this.go_index(ind);
+    },
+    /*
+        获取动画样式，要兼容更多浏览器，可以扩展该方法
+        @int fig : 1 动画 2  没动画
+    */
+    get_style : function(fig){
+        var x = this.now_left ,
+            time = fig==1?this.scroll_time:0;
+        return {
+            '-webkit-transition':'-webkit-transform '+time+'ms',
+            '-webkit-transform':'translate3d('+x+'px,0,0)',
+            '-webkit-backface-visibility': 'hidden',
+            'transition':'transform '+time+'ms',
+            'transform':'translate3d('+x+'px,0,0)'
+        };
+    }
+});
+/*
+    这里对外提供调用接口，对外提供接口方法
+    next ：下一页
+    prev ：上一页
+    go ：滚动到指定页
+*/
+$.mggScrollImg = function(box,config){
+    var scrollImg = new mggScrollImg(box,config);
+    return {//对外提供接口
+        next : function(){scrollImg.next();},
+        prev : function(){scrollImg.prev();},
+        go : function(ind){scrollImg.go_index(parseInt(ind)||0);}
+    }
+}
+})(Zepto)
+
+mggScrollImg核心脚本
+Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
+
+function post(){
+  // var postContent = $("#share").val;
+  // var userName =  Bmob.User.current().username;
+  // var productName = $("#productnameLable").val();
+  // var postPic =$("#uploadImg")[0];
+  alert("发布成功！");
+  // window.location="../html/firstpage.html";
+  $("#posthidden").css("display","block");
+  
+}
+// function checkRegisterinfo(){
+//  var email = $("#email").val();
+//  var userName = $("#userName").val();
+//  var pwd = $("#pwd").val();
+//  var repwd = $("#repwd").val();
+//  if(pwd == repwd){
+//    var user = new Bmob.User();
+//    user.set("username", userName);
+//    user.set("password", pwd);
+//    user.set("email", email);
+//    user.signUp(null, {
+//      success: function(user) {
+//        alert("注册成功！");
+//        window.location.href ="login.html"
+//      },
+//      error: function(user, error) {
+//        alert("注册失败！");
+//      alert("Error: " + error.code + " " + error.message)
+//      }
+//    });
+//  }else{
+//    alert("两次输入的密码不匹配！");
+//  } 
+// }
+var d=new Date();
+var monthname=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+//Ensure correct for language. English is "January 1, 2004"
+var TODAY = monthname[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+$(function(){
+  var signFun = function(){
+    
+      }
+})
+Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
+
+function checkRegisterinfo(){
+  var email = $("#email").val();
+  var userName = $("#userName").val();
+  var pwd = $("#pwd").val();
+  var repwd = $("#repwd").val();
+  if(pwd == repwd){
+    var user = new Bmob.User();
+    user.set("username", userName);
+    user.set("password", pwd);
+    user.set("email", email);
+    user.signUp(null, {
+      success: function(user) {
+        alert("注册成功！");
+        window.location.href ="login.html"
+      },
+      error: function(user, error) {
+        alert("注册失败！");
+      alert("Error: " + error.code + " " + error.message)
+      }
+    });
+  }else{
+    alert("两次输入的密码不匹配！");
+  } 
+}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../js/bmob-min.js"></script>
+    <script type="text/javascript">
+      Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+      function bmobClick(){
+        alert("xixi")
+        var user = new Bmob.User();
+        user.set("username", "my name");
+        user.set("password", "my pass");
+        user.set("email", "email@example.com");
+        user.set("phone", "415-392-0202");
+        user.signUp(null, {
+            success: function(user) {
+              alert("chenggong");
+            },
+           error: function(user, error) {
+              alert("Error: " + error.code + " " + error.message);
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="bmobClick()" style="width:100px;height: 30px;">按钮</button>
+  </body>
+</html>
+<html> 
+<style>
+  html{
+      width: 100%;
+      overflow:scroll;
+      overflow-x: hidden;
+      font-family: "Microsoft YaHei",Sans-serif ;
+  }
+    html,div,ul,li{margin:0;padding:0;}
+  @media screen and (min-width:240px) {
+      html{
+          font-size:9px;
+      }
+  }
+  @media screen and (min-width:320px) {
+      html{
+          font-size:12px;
+      }
+  }
+  @media screen and (min-width:480px) {
+      html
+    {
+      font-size:18px;
+      }
+  }
+  @media screen and (min-width:640px) {
+      html
+    {
+          font-size:24px;
+      }
+  }
+  @media screen and (min-width:960px) {
+      html
+    {
+          font-size:36px;
+      }
+  }
+</style>
+<frameset rows="90%,10%">
+  <frame src="firstpage.html" name="toppage" frameborder="0" noresize="noresize" >
+  <frame src="footer.html" name="footerpage" frameborder="1" noresize="noresize" style="overflow:hidden;">
+    
+  </style>>
+</frameset>
+</html><!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta content="telephone=no" name="format-detection" />
+<meta name="keywords" content="seokeywords"/>
+<meta name="description" content="seodescription"/>
+<link rel="stylesheet" href="../css/firstpage.css">
+<title>首页</title>
+</head>
+<body> 
+    <!-- 轮播图片 -->
+    <div class="imgbox"> 
+        <ul>
+            <li><a href="#"><img src="../img/3.jpg" width="100%"></img></a></li>
+            <li><a href="#"><img src="../img/2.jpg" width="100%"></img></a></li>
+            <li><a href="#"><img src="../img/4.jpg" width="100%"></img></a></li>
+        </ul>
+        <a href="../html/searchpart.html"><img src="../img/fp-search.png" class="fp-search"></a>
+    </div>
+    <!-- 首页按钮 -->
+    <div class="flexcontainer menubox">
+        <div class="flex-item">
+            <a href="../html/searchpart.html"><img src="../img/menu1.png" alt="产品库" width="55rem"></a>
+        </div>
+        <div class="flex-item">
+            <a href="../html/test.html"><img src="../img/menu3.png" alt="产品试用" width="55rem"></a>
+        </div>
+        <div class="flex-item">
+            <a href="#"><img src="../img/menu4.png" alt="签到" width="55rem"></a>
+        </div>
+        <div class="flex-item">
+            <a href="../html/tote.html"><img src="../img/menu5.png" alt="美妆大赏" width="55rem"></a>
+        </div>
+    </div>
+    <!-- 空白横条 -->
+    <div class="blackspace"></div>
+    <!-- 显示分享 -->
+    <div style="display:hidden;" id="posthidden">
+        <!-- 头像栏 -->
+        <div class="personinfo flexcontainer">
+             <div class="pi-head"> <!--头像-->
+                <img src="../img/head1.png" alt="头像" width="100%" height="100%">
+            </div>
+            <div class="pi-info">
+                <div class="pi-title">口红</div>
+                <div class="pi-name">123</div>
+            </div>
+        </div>
+        <div class="rowline"></div>
+        <!-- 数据 -->
+        <div class="flexcontainer data-list">
+            <div class="flex-item dataposi">
+                <a href="#" class="linka"><img src="../img/eye.png" alt=""></a>
+            </div>
+            <div class="flex-item dataposi">
+                 <a href="#" class="linka"><img src="../img/good.png" alt=""></a>
+            </div>
+            <div class="flex-item dataposi">
+                 <a href="#" class="linka"><img src="../img/message.png" alt=""></a>
+            </div>
+        </div>
+        <!-- 空白横条 -->
+        <div class="blackspace"></div>
+        <div class="sharepic">
+            <a href="#"><img src="../img/pic1.jpg" alt="产品图" width="100%"></a>
+        </div>
+    </div>
+    <div>
+        <!-- 头像栏 -->
+        <div class="personinfo flexcontainer">
+             <div class="pi-head"> <!--头像-->
+                <img src="../img/head1.png" alt="头像" width="100%" height="100%">
+            </div>
+            <div class="pi-info">
+                <div class="pi-title">爱丽小屋小烟熏</div>
+                <div class="pi-name">小熊胖胖</div>
+            </div>
+        </div>
+        <div class="rowline"></div>
+        <!-- 数据 -->
+        <div class="flexcontainer data-list">
+            <div class="flex-item dataposi">
+                <a href="#" class="linka"><img src="../img/eye.png" alt=""></a>
+            </div>
+            <div class=""></div>
+            <div class="flex-item dataposi">
+                 <a href="#" class="linka"><img src="../img/good.png" alt=""></a>
+            </div>
+            <div class="flex-item dataposi">
+                 <a href="#" class="linka"><img src="../img/message.png" alt=""></a>
+            </div>
+        </div>
+        <!-- 空白横条 -->
+        <div class="blackspace"></div>
+        <div class="sharepic">
+            <a href="#"><img src="../img/pic3.jpg" alt="产品图" width="100%"></a>
+        </div>
+    </div>
+    <!-- 脚部footer -->
+    <!-- <div class="footer flexcontainer">
+        <div class="flex-item">
+            <div class="buttonbox buttonbox1" >
+                 <a id="a1" class="buttononNav"><img src="../img/home2.png" alt="首页" width="20rem" class="homeimg"></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox2" >
+                <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox3">
+                <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox4">
+                 <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
+            </div>
+        </div>
+    </div> -->
+<script src="../js/zepto.min.js"></script>
+<script src="../js/mggScrollImg.js"></script>
+<script src="../js/post.js"></script>
+<script>
+
+(function(){
+/*
+    注意：$.mggScrollImg返回的scrollImg对象上有
+            next，prev，go三个方法，可以实现外部对滚动索引的控制。
+    如：scrollImg.next();//会切换到下一张图片
+        scrollImg.go(0);//会切换到第一张图片
+*/
+    var scrollImg = $.mggScrollImg('.imgbox ul',{
+            loop : true,//循环切换
+            auto : true,//自动切换
+            callback : function(ind){//这里传过来的是索引值
+                $('#page').text(ind+1);
+            }
+        });
+    })()
+    // 实现footer点击图片变换效果      
+    // $(".footer .flex-item .buttonbox a").click(function() {
+
+    // $(".footer .flex-item .buttonbox a").removeClass("buttononNav");
+    //     $(this).addClass("buttononNav");
+    // });
+    
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/firstpage.css">
+  <title>首页</title>
+</head>
+<body>
+  <!-- 固定脚部 -->
+  <div class="footer flexcontainer">
+        <div class="flex-item">
+            <div class="buttonbox buttonbox1" >
+                 <a href="firstpage.html" class="buttononNav" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem" class="homeimg"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox2" >
+                <a href="searchpart.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox3">
+                <a href="post.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+        <div class="flex-item">
+            <div class="buttonbox buttonbox4">
+                 <a href="userinfo.html" target="toppage"><!-- <img src="../img/home2.png" alt="首页" width="20rem"> --></a>
+            </div>
+        </div>
+    </div>
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/mggScrollImg.js"></script>
+    <script>
+      $(".footer .flex-item .buttonbox a").click(function() {
+
+      $(".footer .flex-item .buttonbox a").removeClass("buttononNav");
+         $(this).addClass("buttononNav");
+      });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta content="telephone=no" name="format-detection" />
+        <meta name="keywords" content="seokeywords"/>
+        <meta name="description" content="seodescription"/>
+        <link rel="stylesheet" href="../css/totelist1.css">
+    </head>
+    <body>
+        <!-- 头部 -->
+        <div class="header">
+            <div class="backposi">
+                <a href="../html/tote.html" class="linka">
+                    <img src="../img/back.png" alt="返回" width="100%">
+                </a>
+            </div>
+            <div class="totetext"></div>
+            <div class="moreposi">
+                <a href="#" class="linka">
+                    <img src="../img/more.png" alt="更多" width="100%">
+                </a>
+            </div>
+        </div>
+        <!-- 图片 -->
+        <div class="toppic">
+            <img src="../img/totepic1.jpg" alt="美妆大赏图片" width="100%">
+        </div>
+        <div class="rowline" width="85%"></div>
+        <!-- 护肤品分类 -->
+        <div class="ds-classify">
+            <a href="../html/hflist.html">
+                <img  class="ds-one" src="../img/shuangfushui.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/jiemianru.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/ruye.png" alt="护肤品榜单" width="25%">
+            </a>
+        </div>
+        <div class="ds-classify">
+            <a href="#">
+                <img  class="ds-one" src="../img/mianshuang.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/jinghua.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/mianmo.png" alt="护肤品榜单" width="25%">
+            </a>
+        </div>
+        <div class="ds-classify">
+            <a href="#">
+                <img  class="ds-one" src="../img/shentiru.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/xiezhuangye.png" alt="护肤品榜单" width="25%">
+            </a>
+            <a href="#">
+                <img src="../img/fangshaishuang.png" alt="护肤品榜单" width="25%">
+            </a>
+        </div>
+    </body>
+</html><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>去淘宝</title>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta content="telephone=no" name="format-detection" />
+        <meta name="keywords" content="seokeywords"/>
+        <meta name="description" content="seodescription"/>
+        <link rel="stylesheet" href="../css/czbd.css">
+    </head>
+    <body>
+        <div class="header">
+            <div class="backposi">
+                <a href="../html/tote.html" class="linka">
+                    <img src="../img/back.png" alt="返回" width="100%">
+                </a>
+            </div>
+        </div>
+        <div class="bd_list_one">
+            <div class="left">
+                <img src="../img/bd_sfs_1.png" width="100%" height="100%" alt="pic">
+            </div>
+            <div class="right">
+                <p class="cp_title"><b>SK-II 护肤精华露/神仙水</b></p>
+                <p class="cp_detail"><b>215ml&nbsp;&nbsp;|&nbsp;&nbsp;&yen;399.00</b></p>
+                <img src="../img/star.png" alt="评分" class="score">
+                <div class="buy"><b>立即购买</b></div>
+            </div>
+        </div>
+        <div class="bd_list_two">
+            <div class="left">
+                <img src="../img/bd_sfs_2.png" width="100%" height="100%" alt="pic">
+            </div>
+            <div class="right">
+                <p class="cp_title"><b>LANCOME 兰蔻 焕白精华化妆水</b></p>
+                <p class="cp_detail"><b>150ml&nbsp;&nbsp;|&nbsp;&nbsp;&yen;489.00</b></p>
+                <img src="../img/star_1.png" alt="评分" class="score">
+                <div class="buy"><b>立即购买</b></div>
+            </div>
+        </div>
+        <div class="bd_list_three">
+            <div class="left">
+                <img src="../img/bd_sfs_3.png" width="100%" height="100%" alt="pic">
+            </div>
+            <div class="right">
+                <p class="cp_title"><b>Attenir 艾天然 弹力保湿化妆水</b></p>
+                <p class="cp_detail"><b>150ml&nbsp;&nbsp;|&nbsp;&nbsp;&yen;357.00</b></p>
+                <img src="../img/star_2.png" alt="评分" class="score">
+                <div class="buy"><b>立即购买</b></div>
+            </div>
+        </div>
+        <div class="bd_list_four">
+            <div class="left">
+                <img src="../img/bd_sfs_4.png" width="100%" height="100%" alt="pic">
+            </div>
+            <div class="right">
+                <p class="cp_title"><b>Freshel 高保湿化妆水</b></p>
+                <p class="cp_detail"><b>200ml&nbsp;&nbsp;|&nbsp;&nbsp;&yen;268.00</b></p>
+                <img src="../img/star_3.png" alt="评分" class="score">
+                <div class="buy"><b>立即购买</b></div>
+            </div>
+        </div>
+    </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>注册登录</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/firstpage.html" class="linka">
+        <img src="../img/back.png" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="headerbox">
+    登录
+    </div>
+  </div>
+  <div>
+    <div class="registerbox">
+      <div class="namebox">
+        <input type="text" class="inputbox" placeholder="用户名" id="userName" required = "required" pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+" title ="用户名格式不正确"/>
+      </div>
+      <div class="rowline"></div>
+      <div class="password">
+        <input type="password" class="inputbox" placeholder="请输入密码" id="pwd" required = "required" pattern="^[\w\W]{6,16}$" title="密码长度为6~16个字符">
+      </div>
+    </div>
+    <div class="forgetpwd">
+      <P style="float:right;">立即注册</P>
+    </div>
+    <div class="buttonbox">
+      <button type="submit" onclick="checkUser();" class="buttontext">立即登录</button>
+    </div>
+  </div>
+  <!-- <button style="width:100px;height:30px" onclick="checkUser();"></button> -->
+  <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
+  <script src="../js/bmob-min.js"></script>
+  <script src="../js/bmobSocketIo-min.js"></script>
+  <script src ="../js/login.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css">
+  
+    <style>
+      .linka{
+          display: block;
+      }
+      .header{
+          width: 100%;
+          height: 4rem;
+          background-color: #fff;
+          border-bottom: 0.08rem solid #E5E2E2;
+          position: fixed;
+          top: 0px;
+          left: 0px;
+          margin-bottom: 9rem;
+      }
+    .backposi{
+        width: 1.7rem;
+        height: 1.7rem;
+        margin-top: 1rem;
+        margin-left: 1rem;
+        float: left;
+         overflow: hidden;
+    }
+    .moreposi{
+        width: 1.7rem;
+        height: 1.7rem;
+        overflow: hidden;
+        float: right;
+        margin-right: 2rem;
+        margin-top: 1rem;
+    }
+    </style>
+</head>
+<body>
+  <div data-role="page" id="pageone" style="background-color:#fff;color:#F93AA2;">
+    <div data-role="header" style="color:#F93AA2;">
+      <a href="../html/firstpage.html" data-role="button"data-shadow="false" data-theme="d" data-mini="true" style="background-color:#fff;color:#999;border-color:#fff;border-radius:100%;" data-ajax="false">返回</a>
+      <h2>我的美丽秘密</h2>
+      <button href="#" data-role="button" data-shadow="false" data-theme="d" data-mini="true" style="display:inline; background-color:#fff;color:#999;border-color:#fff;border-radius:100%;" onclick="post();">发布</button>
+    </div>
+    <div data-role="content" data-theme="f" style="background-color:#fff;">
+       <div>
+          <input type="text" placeholder="搜索标签" style="height:30px; width=200px;" id="productnameLable">
+          <!-- <a href="#" data-rola="button">搜索</a> -->
+       </div>
+        <div class="cover" style="height:100px;">
+          <input type="file" id="uploadImg" value="上传封面图片"  placeholder="上传封面图片">
+          <!-- <a href="#" data-role="button" data-shadow="false" data-inline="true"style="background-color:#fff;border-color:#fff;color:#CECACA;left:138px;top:30px;">设置封面</a> -->
+        </div>
+         <div>
+          <!-- <label for="fname" class="ui-hidden-accessible">分享你的美丽秘密吧……</label> -->
+        <textarea name="share" id="share" placeholder="分享你的美丽秘密吧……"></textarea style="min-height:200px;">
+          <!-- <a href="#" data-role="button"data-shadow="false" data-corners="false" style="background-color:#fff;border-color:#fff;position:fixed;left:10px;padding:0 220px 0 0;"> -->
+        </div>
+       <!--  <a href="#pagetwo" data-role="button" data-shadow="false" data-inline="true" data-transition="slide" data-mini="true" style="border-color:#fff;background-color:#F93AA2;color:#fff;font-weight:lighter;">#选择标签</a>
+       -->
+       
+    </div>
+    
+  </div>
+  <div data-role="page" id="pagetwo">
+    <div data-role="header" style="color:#F93AA2;"> 
+    <a href="#pageone" data-role="button"data-shadow="false" data-theme="d"  data-transition="slide" data-direction="reverse" data-mini="true" style="background-color:#fff;border-color:#fff;color:#999;border-radius:100%;">返回</a>
+      <h2>我的美丽秘密</h2>
+    </div>
+    <div data-role="content" data-theme="f" style="background-color:#fff;">
+    <ul data-role="listview" data-inset="true">
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/1.png" alt="化妆教程" class="ui-li-icon">化妆教程</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/2.png" alt="护肤心得" class="ui-li-icon">护肤心得</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/3.png" alt="晒货公举" class="ui-li-icon">晒货公举</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/4.png" alt="医美整形" class="ui-li-icon">医美整形</a>
+      </li>
+      </ul>
+      <ul data-role="listview" data-inset="true">
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/5.png" alt="美姿生活" class="ui-li-icon">美姿生活</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/6.png" alt="美体瘦身" class="ui-li-icon">美体瘦身</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/7.png" alt="美发美容" class="ui-li-icon">美发美容</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/8.png" alt="健康美甲" class="ui-li-icon">健康美甲</a>
+      </li>
+      </ul>
+      <ul data-role="listview" data-inset="true">
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/9.png" alt="深度卸妆" class="ui-li-icon">深度卸妆</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;background-color:#fff;"><img src="../img/10.png" alt="生活杂记" class="ui-li-icon">生活杂记</a>
+      </li>
+    </ul>
+    </div>
+    
+  </div>
+  <div data-role="page" id="pagethr"style="width:65%;height:50%;color:#999;background-color:#fff;left:40px;margin:100px 30px">
+    <div data-role="header"style="background:#F93AA2;color:#FFFFFF;">
+      <h4>消息提示</h4>
+    </div>
+    <div data-role="content" style="color:#F93AA2;background-color:#FFFFFF;margin:0 20px 0 35px;font-weight:300;" >
+      <img src="../img/main.gif">
+      <h4>发布成功！</h4>
+    </div>
+  </div>
+  <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+    <script src="../js/bmob-min.js"></script>
+  <script src="../js/bmobSocketIo-min.js"></script>
+    <script src="../js/post.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/qiandao.css">    
+<!--  <script src="http://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
+  <script src="../js/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../js/qiandao.js">
+    </script>
+    
+</head>
+<body>
+
+  <!-- 头部 -->
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/firstpage.html" class="linka">
+        <img src="../img/back.jpg" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="totetext"></div>
+    <div class="moreposi">
+      <a href="#" class="linka">
+        <img src="../img/more.png" alt="更多" width="100%">
+      </a>
+    </div>
+  </div>
+  <div class="qiandao-box">
+    <div class="qiandao-top">
+      <div class="current-date" ">
+        <script type="text/javascript">
+          document.write(TODAY);
+        </script>
+      </div>
+      <div class="just-qiandao" id="js-just-qiandao">
+      立即签到
+      </div>
+
+    </div>
+    <div id="qiandao"></div>
+  </div>
+<!--  <div id="qiandaocg">
+    <div class="cg">签到成功</div>
+  </div> -->
+<script>
+ $("#js-just-qiandao").click(function(){
+    $(this).text("");
+    $("#qiandaocg").text("");
+    //document.getElementById("js-just-qiandao").innerHTML = "";
+    var html= "<div id='qiandaocg'><div class='cg'>签到成功</div></div>";
+      // alert("df");
+     $("#js-just-qiandao").append(html);
+     // var $qiandao = $('#qiandao');
+     $("#qiandao").animate({
+      "top":"0%","left":"0%","width":"100%","height":"100%"
+     },1000);
+     });
+
+   $("#qiandao").click(function(){
+     $("#qiandaocg").fadeOut();
+     $(this).animate({
+     "width": "0",
+     "height":"0",
+    //  "top": "50%",
+    //  "left": "50%"
+    },1000);
+
+  });
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>注册登录</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+  <!-- 头部 -->
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/firstpage.html" class="linka">
+        <img src="../img/back.png" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="headerbox">
+    注册
+    </div>
+  </div>
+  <div>
+    <div class="registerbox">
+      <div class="emailbox">
+        <input type="text" id="email" class="inputbox" placeholder="请输入邮箱" required="required" pattern="\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}"/ title="邮箱格式不正确">
+      </div>
+      <div class="rowline"></div>
+      <div class="namebox">
+        <input type="text" class="inputbox" placeholder="昵称" id="userName" required="required" pattern="[A-Za-z0-9_\-\u4e00-\u9fa5]+" title="用户名格式不正确"/>
+      </div>
+      <div class="rowline"></div>
+      <div class="password">
+        <input type="password" class="inputbox" placeholder="请输入密码" id="pwd"  required="required" pattern="^[\w\W]{6,16}$" title="密码长度为6~16个字符"/>
+      </div>
+      <div class="rowline"></div>
+      <div class="password">
+        <input type="password" class="inputbox" placeholder="再次确认密码" id="repwd" required="required" pattern="^[\w\W]{6,16}$" title="密码长度为6~16个字符" />
+      </div>
+    </div>
+    <div class="buttonbox">
+        <button onclick="checkRegisterinfo();" class="buttontext">立即注册</button>
+    </div>
+  </div>
+  <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
+  <script src="../js/bmob-min.js"></script>
+  <script src="../js/bmobSocketIo-min.js"></script>
+  <script src="../js/register.js" type="text/javascript"></script>
+</body>
+</html><!DOCTYPE HTML>
+<html>
+    <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta name="keywords" content="seokeywords"/>
+    <meta name="description" content="seodescription"/>
+    <link rel="stylesheet" href="../css/searchpart.css">
+    <link rel="stylesheet" href="../css/totelist1.css">
+    <title>首页</title>
+    </head>
+    <body>
+        <div class="header">
+            <div class="backposi">
+                <a href="../html/firstpage.html" class="linka">
+                    <img src="../img/back.png" alt="返回" width="100%">
+                </a>
+            </div>
+        </div>
+        <div class="partone">
+            <div class="se-now">
+                <img src="../img/fp-search.png" alt="se-now" width="100%">
+            </div>
+            <div class="sousou">
+                <div class="se-btn">
+                    <a href="##">搜一搜</a>
+                </div>
+            </div>
+        </div>
+        <div class="parttwo">
+            <a href="##"><img src="../img/chanpin.png" alt="chanpin" class="img-one"></a>
+            <a href="##"><img src="../img/xinde.png" alt="xinde" class="img-two"></a>
+            <a href="##"><img src="../img/yonghu.png" alt="yonghu" class="img-three"></a>
+        </div>
+        <div class="sr-blank"></div>
+        <div class="partthree">
+            <div class="title">
+                <p><b>热门搜索</b></p>
+            </div>
+            <div class="hot-list">
+                <div class="li-left">
+                    <a href="##"><p class="hot-title">阿玛尼粉饼</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+                <div class="li-right">
+                    <a href="##"><p class="hot-title">馥蕾诗</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+            </div>
+            <div class="hot-list">
+                <div class="li-left">
+                    <a href="##"><p class="hot-title">科颜氏</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+                <div class="li-right">
+                    <a href="##"><p class="hot-title">茱莉蔻</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+            </div>
+            <div class="hot-list">
+                <div class="li-left">
+                    <a href="##"><p class="hot-title">迪奥唇膏</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+                <div class="li-right">
+                    <a href="##"><p class="hot-title">悦诗风吟</p></a>
+                    <img src="../img/re.png" alt="热" class="hot-img">
+                </div>
+            </div>
+            <div class="hot-list">
+                <div class="li-left">
+                    <a href="##"><p class="hot-title">Bobbie Brown</p></a>
+                    <!-- <img src="../img/re.png" alt="热" class="hot-img"> -->
+                </div>
+                <div class="li-right">
+                    <a href="##"><p class="hot-title">玉兰油</p></a>
+                    <!-- <img src="../img/re.png" alt="热" class="hot-img"> -->
+                </div>
+            </div>
+            <div class="hot-list">
+                <div class="li-left">
+                    <a href="##"><p class="hot-title">SK-II</p></a>
+                    <!-- <img src="../img/re.png" alt="热" class="hot-img"> -->
+                </div>
+                <div class="li-right">
+                    <a href="##"><p class="hot-title">HR&nbsp;赫莲娜</p></a>
+                    <!-- <img src="../img/re.png" alt="热" class="hot-img"> -->
+                </div>
+            </div>
+        </div>
+    </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <style type="text/css">
+    /*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width:1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+     overflow: hidden;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+.bl{
+  width: 100%;
+  height: 1.5rem;
+  border-bottom: 2px solid #aeb0b2;
+  padding: 1rem;
+  background-color: #FFfAFd;
+}
+span{
+  vertical-align: text-bottom;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+input{
+  border: none;
+}
+  </style>
+}
+}
+</head>
+<body>    
+  <form method="post" action="#">
+
+    <div class="header">
+      <div class="backposi">
+        <a href="../index.html" class="linka">
+          <img src="../img/back.png" alt="返回" width="100%">
+        </a>
+      </div>
+      <div class="totetext"></div>
+      <div class="moreposi"> 
+        <a href="#" class="linka">
+          <img src="../img/tijiao.jpg" alt="提交" width="100%">
+        </a>
+      </div>
+    </div>
+    <!-- end header -->
+    <div style="margin-top:2.8rem;">
+        <div class="bl">
+          <span>收货人姓名:</span><input type="text" name="kehuname" id="kehuname" />
+        </div>
+        <div class="bl">
+          <span>手机号码&nbsp&nbsp&nbsp:</span><input type="text" name="tel" />
+        </div>
+        <div class="bl">
+          <span>所在地区&nbsp&nbsp&nbsp:</span><input type="text" name="address" />
+        </div>
+        <div class="bl">
+          <span>街道地址&nbsp&nbsp&nbsp:</span><input type="text" name="jdaddress" />
+        </div>
+        <div class="bl">
+          <span>邮政编码&nbsp&nbsp&nbsp:</span><input type="text" name="zipcode" />
+        </div>
+    </div>
+  c</form>
+</body><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/test.css">
+</head>
+<body>
+  <!-- 头部 -->
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/firstpage.html" class="linka">
+        <img src="../img/shiyongback.jpg" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="totetext"></div>
+    <div class="moreposi">
+      <a href="#" class="linka">
+        <img src="../img/more.png" alt="更多" width="100%">
+      </a>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="boxlist">
+      <div class="listleft">
+        <a href="#">
+          <img src="../img/shiyong1.jpg" alt="图片" width="100%" height="100%">
+        </a>
+      </div>
+      <div class="listright">
+        <h6>资生堂新艳阳夏臻效水动力防护乳SPF50+/PA+++</h6>
+        <div class="proinfo">
+          <ul>
+            <li>
+              规格
+              <br>
+              <b>150ml</b>
+            </li>
+            <li>
+            价值
+            <br>
+            <b>￥49</b>
+            </li>
+            <li style="border:none;">
+              提供<br>
+              <b>10</b>份
+            </li>
+          </ul>
+        </div>
+        <div class="btn">
+          <a href="#">立即领取</a>
+        </div>
+      </div>
+    </div>
+    <div class="boxlist">
+      <div class="listleft">
+        <a href="#">
+          <img src="../img/shiyong2.jpg" alt="图片" width="100%" height="100%">
+        </a>
+      </div>
+      <div class="listright">
+        <h6>菲诗小铺 蘂花譚 白参胶原蛋白珍珠精华霜</h6>
+        <div class="proinfo">
+          <ul>
+            <li>
+              规格
+              <br>
+              <b>50g</b>
+            </li>
+            <li>
+            价值
+            <br>
+            <b>￥462</b>
+            </li>
+            <li style="border:none;">
+              提供<br>
+              <b>10</b>份
+            </li>
+          </ul>
+        </div>
+        <div class="btn">
+          <a href="#">立即领取</a>
+        </div>
+      </div>
+    </div>    
+    <div class="boxlist">
+      <div class="listleft">
+        <a href="#">
+          <img src="../img/shiyong3.jpg" alt="图片" width="100%" height="100%">
+        </a>
+      </div>
+      <div class="listright">
+        <h6>雅漾自然倍护防晒露SPF30+</h6>
+        <div class="proinfo">
+          <ul>
+            <li>
+              规格
+              <br>
+              <b>100ml</b>
+            </li>
+            <li>
+            价值
+            <br>
+            <b>￥265</b>
+            </li>
+            <li style="border:none;">
+              提供<br>
+              <b>10</b>份
+            </li>
+          </ul>
+        </div>
+        <div class="btn">
+          <a href="#">立即领取</a>
+        </div>
+      </div>
+    </div>
+    <!-- end boxlist -->
+    <div class="boxlist">
+      <div class="listleft">
+        <a href="#">
+          <img src="../img/shiyong4.jpg" alt="图片" width="100%" height="100%">
+        </a>
+      </div>
+      <div class="listright">
+        <h6>曼妮芬美妆玫瑰护手霜</h6>
+        <div class="proinfo">
+          <ul>
+            <li>
+              规格
+              <br>
+              <b>40ml</b>
+            </li>
+            <li>
+            价值
+            <br>
+            <b>￥89</b>
+            </li>
+            <li style="border:none;">
+              提供<br>
+              <b>10</b>份
+            </li>
+          </ul>
+        </div>
+        <div class="btn">
+          <a href="#">立即领取</a>
+        </div>
+      </div>
+    </div>
+    <!-- end boxlist -->
+    <div class="boxlist">
+      <div class="listleft">
+        <a href="#">
+          <img src="../img/shiyong5.jpg" alt="图片" width="100%" height="100%">
+        </a>
+      </div>
+      <div class="listright">
+        <h6>曼妮芬美妆玫瑰护手霜</h6>
+        <div class="proinfo">
+          <ul>
+            <li>
+              规格
+              <br>
+              <b>10g*7+3.5ml</b>
+            </li>
+            <li>
+            价值
+            <br>
+            <b>￥210</b>
+            </li>
+            <li style="border:none;">
+              提供<br>
+              <b>10</b>份
+            </li>
+          </ul>
+        </div>
+        <div class="btn">
+          <a href="#">立即领取</a>
+        </div>
+      </div>
+    </div>
+    <!-- end boxlist -->
+
+  </div>
+</body><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/tote.css">
+</head>
+<body>
+  <!-- 头部 -->
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/firstpage.html" class="linka">
+        <img src="../img/back.png" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="headerbox">
+    去淘宝口碑排名
+      <!-- <p class="header-text">去淘宝口碑排名</p> -->
+    </div>
+    <!-- <div class="moreposi">
+      <a href="#" class="linka">
+        <img src="../img/more.png" alt="更多" width="100%">
+      </a>
+    </div> -->
+  </div>
+  <!-- 大赏图片及文字 -->
+  <div class="totebox" style="margin-top:2rem;">
+    <div class="totepic">
+      <a href="../html/totelist1.html"><img src="../img/totepic2.jpg" alt="大赏图片" width="100%">
+      </a>
+    </div>
+    <div>
+      <a href="../html/totelist1.html" class="linka"><p class="totetitle">2016年美妆产品排名-总榜单</p></a>
+      <p class="totetext">去淘宝消费者口碑榜</p>
+    </div>
+  </div>
+  <div class="blackspace"></div>
+  <div class="totebox">
+    <div class="totepic">
+      <a href="../html/hfbd.html"><img src="../img/totepic1.jpg" alt="大赏图片" width="100%">
+      </a>
+    </div>
+    <div>
+      <a href="../f.html" class="linka"><p class="totetitle">2016年美妆产品排名-护肤榜单</p></a>
+      <p class="totetext">去淘宝消费者口碑榜</p>
+    </div>
+  </div>
+  <div class="blackspace"></div>
+  <div class="totebox">
+    <div class="totepic">
+      <a href="#"><img src="../img/totepic4.jpg" alt="大赏图片" width="100%">
+      </a>
+    </div>
+    <div>
+      <a href="../index.html" class="linka"><p class="totetitle">2016年美妆产品排名-彩妆榜单</p></a>
+      <p class="totetext">去淘宝消费者口碑榜</p>
+    </div>
+  </div>
+  <div class="blackspace"></div>
+  <div class="totebox">
+    <div class="totepic">
+      <a href="../index.html"><img src="../img/totepic3.jpg" alt="大赏图片" width="100%">
+      </a>
+    </div>
+    <div>
+      <a href="../index.html" class="linka"><p class="totetitle">2016年上半年彩妆榜单</p></a>
+      <p class="totetext">去淘宝消费者口碑榜</p>
+    </div>
+  </div>
+  <div class="blackspace"></div>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>去淘宝</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content = "width=device-width, target-densitydpi=high-dpi, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta content="telephone=no" name="format-detection" />
+  <meta name="keywords" content="seokeywords"/>
+  <meta name="description" content="seodescription"/>
+  <link rel="stylesheet" href="../css/totelist1.css">
+</head>
+<body>
+  <!-- 头部 -->
+  <div class="header">
+    <div class="backposi">
+      <a href="../html/tote.html" class="linka">
+        <img src="../img/back.png" alt="返回" width="100%">
+      </a>
+    </div>
+    <div class="totetext"></div>
+    <!-- <div class="moreposi">
+      <a href="#" class="linka">
+        <img src="../img/more.png" alt="更多" width="100%">
+      </a>
+    </div> -->
+    
+  </div>
+  <!-- 图片 -->
+  <div class="toppic">
+    <img src="../img/totepic2.jpg" alt="美妆大赏图片" width="100%">
+  </div>
+  <div class="rowline" width="85%"></div>
+  <!-- 彩妆分类 -->
+  <div class="ds-classify">
+    <a href="#">
+      <img  class="ds-one" src="../img/ds-geli.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-fendi.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-mifen.png" alt="彩妆大赏" width="25%">
+    </a>
+  </div>
+  <div class="ds-classify">
+    <a href="#">
+      <img  class="ds-one" src="../img/ds-yanying.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-jiemaogao.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-saihong.png" alt="彩妆大赏" width="25%">
+    </a>
+  </div>
+  <div class="ds-classify">
+    <a href="#">
+      <img  class="ds-one" src="../img/ds-chungao.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-huazhuangshua.png" alt="彩妆大赏" width="25%">
+    </a>
+    <a href="#">
+      <img src="../img/ds-zhijiayou.png" alt="彩妆大赏" width="25%">
+    </a>
+  </div>
+  <!-- <div class="blackspace"></div> -->
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>我的</title>
+  <link rel="stylesheet" href="../css/jquery.mobile-2.4.5.min.css">
+  <script src="../js/jquery-1.11.3.min.js"></script>
+    <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+      /*
+      body,html,div,ul,li{margin:0;padding:0;}
+      @media screen and (min-width:240px) {
+          html, body{
+              font-size:9px;
+          }
+      }
+      @media screen and (min-width:320px) {
+          html, body{
+              font-size:12px;
+          }
+      }
+      @media screen and (min-width:480px) {
+          html, body{
+          font-size:18px;
+          }
+      }
+      @media screen and (min-width:640px) {
+          html, body{
+              font-size:24px;
+          }
+      }
+      @media screen and (min-width:960px) {
+          html, body{
+              font-size:36px;
+          }
+      }*/
+    .headpic{
+      width:43px;
+      height: 43px;
+      background-color: white;
+      border-radius: 50px;
+      overflow: hidden;
+      float: left;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+    .headinfo-name{
+      width: 200px;
+      height: 30px;
+      
+      
+      /*padding-: 40px;*/
+    }
+    .nametext{
+      color: #676565;
+      font-size: 15px;
+      padding-left: 50px;
+      text-align: auto;
+      line-height: 
+    }
+    .rowline{
+      /*border-color: #777;*/
+      width: 70%;
+      border-top:1px solid #ccc;
+      margin-top: 0px;
+      height: 0px;
+    }
+    .headpart{
+      margin-top: 0rem;
+    }
+    
+    </style>
+</head>
+<body>
+  <div data-role="page" id="pageone" >
+    <div data-role="header" data-position="fixed" height="50px">
+      <a href="../html/firstpage.html" data-role="button" data-shadow="false"style="color:#FC5FA8;border-color:#fff;border-radius:100%" data-ajax="false">返回</a>
+    <h2>个人中心</h2> 
+    <a href="#pagetwo" data-role="button" data-shadow="false"style="color:#FC5FA8;border-color:#fff;border-radius:100%" data-ajax="false">设置</a>
+    </div>
+    <div data-role="content" style="background-color:#fff;">
+      <div class="headpart">
+        <div class="headpic">
+          <img src="../img/head1.png" alt="头像" width="100%">
+        </div>
+        <div class="headinfo">
+          <div class="headinfo-name">
+            <p class="nametext" style="margin-left:20px;">熊猫胖胖Panda</p>
+          </div>
+          <div class="rowline" style="margin-left:60px;"></div>
+        </div>
+      </div>
+      
+      <div data-role="controlgroup" data-type="horizontal" style="padding-left:20px;">          
+            <a href="login.html" data-role="button" data-shadow="false"data-mini="true"data-corners="false" target="toppage">登录</a>
+            <a href="register.html" data-role="button" data-shadow="false"data-mini="true"data-corners="false" target="toppage">注册</a>
+            <a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">关注</a>
+            <a href="#" data-role="button" data-shadow="false"data-mini="true"data-corners="false">粉丝</a>
+      </div>
+      <!-- </div> -->
+    
+    <ul data-role="listview" data-inset="true" >
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/1.png"alt="签到"class="ui-li-icon">签到</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/2.png"alt="消息"class="ui-li-icon">消息</a>
+      </li>
+    <!--  <li>
+        <a href="#" style="color:#666;"><img src="../img/3.png"alt="欲望清单"class="ui-li-icon">欲望清单</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/4.png"alt="我的收藏"class="ui-li-icon">我的收藏</a>
+      </li>
+      </ul>
+      <ul data-role="listview" data-inset="true" >
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/5.png"alt="我的订单"class="ui-li-icon">我的订单</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/6.png"alt="优惠券"class="ui-li-icon">优惠券</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/7.png"alt="兑换码、邀请码"class="ui-li-icon">兑换码、邀请码</a>
+      </li>
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/8.png"alt="意见反馈"class="ui-li-icon">意见反馈</a>
+      </li>
+      </ul> -->
+      <ul data-role="listview" data-inset="true" >
+      <li>
+        <a href="#" style="color:#666;"><img src="../img/9.png"alt="致用户的一封信"class="ui-li-icon">致用户的一封信</a>
+      </li>
+    </ul>
+    <!-- <div data-role="footer"data-position="fixed"></div> -->
+    </div>
+    
+  </div>
+  <div data-role="page" id="pagetwo">
+    <div data-role="header"data-position="fixed">
+      <a href="#pageone" data-role="button" data-shadow="false" data-mini="true" style="border-radius:100%;color:#FC5FA8;border-color:#fff;">返回</a>
+      <h2>设置</h2>
+    </div>
+    <div data-role="content" style="background-color:#fff;">
+      <ul data-role="listview" data-inset="true">
+        <li>
+          <a href="#" style="color:#666;">我的账户</a>
+        </li>
+        <li>
+          <a href="#" style="color:#666;">关于我们</a>
+        </li>
+        <li>
+          <a href="#" style="color:#666;">联系我们</a>
+        </li>
+        <!-- <li>
+          <a href="#" style="color:#666;">致用户的一封信</a>
+        </li> -->
+        </ul>
+      <!--  <ul data-role="listview" data-inset="true">
+        <li>
+          <a href="#" style="color:#666;">用户协议</a>
+        </li>
+        <li>
+          <a href="#" style="color:#666;">清除缓存</a>
+        </li>
+        <li>
+          <a href="#" style="color:#666;">评价一下下</a>
+        </li>
+        <li>
+          <a href="#" style="color:#666;">肤质测试</a>
+        </li>
+        </ul> -->
+        <ul data-role="listview" data-inset="true">
+        <li>
+          <a href="#pagethr"data-role="button" data-rel="dialog" style="color:#FC629D">退出登录</a>
+        </li> 
+      </ul>
+    </div>
+  </div>
+  </div>
+  <div data-role="page" id="pagethr"style="width:70%;color:#999;left:40px;margin:120px 20px">
+    <div data-role="header" style="background-color:#F93AA2;color:#FFFFFF;">
+      <h1>美妆秘密</h1>
+    </div>
+    <div data-role="content" >
+      <h4>亲爱的主人，你真的要退出了吗？(╯﹏╰)</h4>
+      <div data-role="controlgroup" data-type="horizontal">
+      <a href="#" data-role="button" data-mini="true" data-shadow="false" style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:30px;">确定</a>
+      <a href="#pagetwo" data-role="button" data-mini="true" data-shadow="false"data-transition="pop"style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:80px;">取消</a>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+.backposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+    overflow: hidden;
+}
+.bd_list_one , .bd_list_two , .bd_list_three{
+    width: 100%;
+    height: 10rem;
+    display: block;
+    border-bottom: 1px dotted #e8e5e6;
+}
+.bd_list_one .left{
+    float: left;
+    width: 34%;
+    height: 10rem;  
+}
+.bd_list_one .right{
+    float: right;
+    width: 63%;
+    height: 10rem;
+}
+.cp_title{
+    padding-top: 1px;
+    font-size: 1.1rem;
+    padding-left: 6px;
+    color: #3c3b3b;
+}
+.cp_detail{
+    padding-bottom: 2px;
+    font-size: 1rem;
+    padding-left: 6px;
+    color: #f9808c;
+    margin-top: -0.5rem;
+}
+.score{
+    display: block;
+    margin-left: 6px;
+    margin-top: -0.5rem;
+}
+.buy{
+    width: 5rem;
+    height: 1.5rem;
+    background: #f9808c;
+    color: #fff;
+    border-radius: 3px;
+    margin-top: 0.8rem;
+    margin-left: 0.4rem;
+    padding-left: 1rem;
+
+}
+.bd_list_two , .bd_list_three , .bd_list_four{
+    clear: both;
+    width: 100%;
+    height: 10rem;
+    display: block;
+}
+.bd_list_two .left , .bd_list_three .left , .bd_list_four .left{
+    float: left;
+    width: 34%;
+    height: 10rem; 
+}
+.bd_list_two .right , .bd_list_three .right , .bd_list_four .right{
+    float: right;
+    width: 63%;
+    height: 10rem;
+}body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+div.imgbox{width:28rem;height:16.5rem;overflow:hidden;margin:0 auto;}
+div.imgbox ul{clear:both;width:75rem;}
+div.imgbox ul 
+li{float:left;width:28rem;height:16.5rem;overflow:hidden;text-align:center;}
+div.imgbox ul li img{width:28rem;height:16.5rem;}
+#page{color:red;}
+
+.linka{
+    display: block;
+}
+
+.flexcontainer{
+    display:flex;
+    flex-flow:row;
+}
+.flex-item{
+    flex:1;
+    text-align: center; 
+}
+.footer{
+    border-top:0.07rem solid #B9B7B7;
+    background-color: #F9F6F6;
+    position: fixed;
+    bottom:0px;
+    left: 0px;
+    width: 100%;
+    height: 4rem;
+    line-height: 4rem;
+}
+.menubox{
+    height: auto;
+    line-height:auto;
+}
+
+/*空白横条*/
+.blackspace{
+    width: 100%;
+    height: 1rem;
+    background-color: #EFE4E4;
+}
+
+/*头像栏*/
+.personinfo{
+    margin:1rem 1rem 1rem 1rem;
+    /*width: 100%;*/
+    height: 4rem;
+   /* padding:1rem 0.5rem 0.5rem 1.5rem;*/
+   /* border: 1rem slide red;*/
+
+}
+.pi-head{
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: white;
+    border-radius: 50px;
+    overflow: hidden;
+  /*  flex:1;*/
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+.pi-info{
+    flex:8;
+}
+.pi-title{
+    padding-left:2rem;
+    font-size: 1.2rem;
+    padding-top: 0.7rem;
+}
+.pi-name{
+    padding-left: 2rem;
+    font-size: 1rem;
+    color: #666;
+    letter-spacing: 0.1rem;
+    margin-top: 0.5rem;
+}
+.rowline{
+    margin-top: 2rem auto;
+    /*width: 26rem;*/
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+.data-list{
+    height: 3rem;
+}
+.test{
+    width: 20px;
+    height: 10px;
+    background-color: red;
+}
+.dataposi{
+    margin-top: 1rem;
+}
+.sharepic{
+    width: 100%;
+    height: 20rem;
+    overflow: hidden;
+}
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+div.imgbox{width:28rem;height:16.5rem;overflow:hidden;margin:0 auto;
+    
+}
+div.imgbox ul{clear:both;width:75rem;}
+div.imgbox ul 
+li{float:left;width:28rem;height:16.5rem;overflow:hidden;text-align:center;}
+div.imgbox ul li img{width:28rem;height:16.5rem;}
+div.imgbox a{
+    text-decoration: none;
+}
+div.imgbox .fp-search{
+    display: block;
+    position:absolute;
+    z-index: 999;     /*设置搜索框固定在轮播图的上面*/
+    margin-top: 13rem;
+    margin-left: 0.2rem;
+}
+
+#page{color:red;}
+
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.flexcontainer{
+    display:flex;
+    flex-flow:row;
+}
+.flex-item{
+    flex:1;
+    text-align: center;
+  /*  width: 3rem;
+    height: 3rem;*/ 
+    /*padding: 3rem;*/
+}
+.footer{
+    /*border-top:0.07rem solid #B9B7B7;*/
+    background-color: #F9F6F6;
+    position: fixed;
+    bottom:0px;
+    left: 0px;
+    width: 100%;
+    height:4rem;
+    line-height: 4rem;
+    /*padding-top: 2rem;*/
+
+    /*padding-bottom: 1rem;*/
+
+
+}
+.menubox{
+    height: auto;
+    line-height:auto;
+}
+.buttonbox{
+    /*background-color: red;*/
+    width: 3rem;
+    height: 2rem;
+    margin:0 auto;
+    margin-top: 0.5rem;
+
+    /*border: 1px solid black;*/
+    /*bottom: 2rem;*/
+    /*margin:1.5rem;*/
+    /*margin-bottom:2rem;*/
+    /*padding-bottom: 3rem;*/
+}
+.buttonbox a{
+    display: block;
+    width: 3rem;
+    height: 2.3rem;
+    line-height: 2rem;
+    display: inline-block;
+    background-size: 2.7rem 5rem;
+    /*overflow: display;*/
+}
+/*.buttonbox a{
+    display:block;
+    background-image:url(../img/home.png) no-repeat center; 
+}*/
+.buttonbox1 a{
+    background-image: url(../img/home.png);
+    background-repeat: repeat-y;
+}
+.buttonbox2 a{
+    background-image: url(../img/product.png);
+    background-repeat: repeat-y;
+
+}
+.buttonbox3 a{
+    background-image: url(../img/share.png);
+    background-repeat: repeat-y;
+
+}
+.buttonbox4 a{
+    background-image: url(../img/user.png);
+    background-repeat: repeat-y;
+
+}
+.buttonoffNav{
+     background-position: 100% 0%;
+}
+
+.buttononNav{
+    background-position:80% 88%; 
+}
+/*空白横条*/
+.blackspace{
+    width: 100%;
+    height: 1rem;
+    background-color: #EFE4E4;
+}
+
+/*头像栏*/
+.personinfo{
+    z-index: -1;
+    margin:1rem 1rem 1rem 1rem;
+    /*width: 100%;*/
+    height: 4rem;
+   /* padding:1rem 0.5rem 0.5rem 1.5rem;*/
+   /* border: 1rem slide red;*/
+
+}
+.pi-head{
+    width: 3.5rem;
+    height: 3.5rem;
+    background-color: white;
+    border-radius: 50px;
+    overflow: hidden;
+  /*  flex:1;*/
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+.pi-info{
+    flex:8;
+}
+.pi-title{
+    padding-left:2rem;
+    font-size: 1.2rem;
+    padding-top: 0.7rem;
+}
+.pi-name{
+    padding-left: 2rem;
+    font-size: 1rem;
+    color: #666;
+    letter-spacing: 0.1rem;
+    margin-top: 0.5rem;
+}
+.rowline{
+    margin-top: 2rem auto;
+    /*width: 26rem;*/
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+.data-list{
+    height: 3rem;
+}
+.test{
+    width: 20px;
+    height: 10px;
+    background-color: red;
+}
+.dataposi{
+    margin-top: 1rem;
+}
+.sharepic{
+    width: 100%;
+    height: 20rem;
+    overflow: hidden;
+}
+/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+body{
+    background-color: #f7f1dc;
+}
+/*首页图片*/
+.imgbox{
+    width: 100%;
+    height: 100%;
+}
+.imgbox1{
+    width:70%;
+    margin: 0 auto;
+    margin-top: 15rem;
+    /*margin-left: 2rem;*/
+    /*text-align: center;*/
+}
+.imgbox2{
+    width: 60%;
+    margin:0 auto;
+    /*margin-top: 5rem;*/
+    text-align: center;
+
+    /*padding-bottom: 3rem;*/
+    position: fixed;
+    bottom: 0rem;
+    left: 0px;
+    right: 0px;
+    /*left: 3rem;*/
+}
+.bottom-box{
+    width: 2rem;
+    height: 2rem;
+    background-color: red;
+    position: fixed;
+    bottom: 0px;
+
+}ul,li{margin:0;padding:0;}
+/*@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}*/
+/*div.imgbox{width:30rem;height:16.5rem;overflow:hidden;margin:0 auto;}
+div.imgbox ul{clear:both;width:75rem;}
+div.imgbox ul 
+li{float:left;width:30rem;height:16.5rem;overflow:hidden;text-align:center;}
+div.imgbox ul li img{width:30rem;height:16.5rem;}
+#page{color:red;}
+width:100%;
+html{
+    font-size: 62.5%;
+}*/
+/*body{
+    width: 100%;
+    background-color: white;
+}
+ul li{
+    list-style-type: none;
+    float: left;
+    width: 100%;
+    overflow: hidden;
+    margin:0 atuo;
+    padding:0;
+
+}*/
+html body{
+    font-size: 62.5%;
+}
+.imgbox{
+    width: 100%;
+    height:13rem;
+    overflow:hidden;
+    margin:0 auto;
+}
+.imgbox ul{
+    clear:both;
+    float:left;
+    overflow:hidden;
+    text-align:center;
+}
+#page{color:red;}/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+    overflow: hidden;
+}
+.headerbox{
+    line-height: 4rem;
+    font-size: 1.5rem;
+    /*margin-top: 0rem;*/
+    /*width: 20rem;*/
+    /*height:100%;*/
+    text-align: center;
+    /*float: left;*/
+}
+.header-text{
+    height: 100%;
+    line-height: 2rem;
+    font-size: 2rem;
+}
+body{
+    background-color: #EFE4E4;
+}
+/*注册窗口*/
+.registerbox{
+    border-radius: 0.3rem;
+    clear: both;
+    width: 25rem;
+    height: 7.5rem;
+    background-color: #fff;
+    /*text-align: center;*/
+    /*margin-top: 10rem;*/
+    margin:0 auto;
+    margin-top: 7rem;
+
+    /*margin: 6rem auto;*/
+}
+.emailbox{
+    width: 100%;
+    /*..rowline{
+    margin-top: 2rem auto;
+    width: 28rem;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+*/
+    height: 3.8rem;
+    border: 0px;
+}
+.namebox{
+    width: 100%;
+    /*..rowline{
+    margin-top: 2rem auto;
+    width: 28rem;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+*/
+    height: 3.8rem;
+    border: 0px;
+}
+.inputbox{
+    clear: both;
+    width: 99%;
+    height:90%;
+    border: 0px;
+    text-align: center;
+    /*margin-left: 2.5rem;*/
+}
+.emailtext{
+    clear: both;
+    width: 20rem;
+    height:90%;
+    border: 0px;
+    text-align: center;
+    margin-left: 2.5rem;
+}
+.password{
+    width: 100%;
+    height:3.8rem;
+    border: 0px;
+}
+.buttonbox{
+    clear: both;
+    border-radius: 0.3rem;
+    /*margin-top:-3rem;*/
+    width: 25rem;
+    height: 4rem;
+    background-color: #ff79a5;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 4rem;
+    margin-top: 2rem;
+    /*margin-left: 2.4rem;*/
+    /*background-color: Transparent; */
+    border-style :none;
+}
+.buttontext{
+    width: 98%;
+    height: 98%;
+    border-style: none;
+    background-color: #ff79a5;
+    color: #fff;
+    z-index: 3;
+    font-size: 1.2rem;
+}
+.rowline{
+    z-index: 3;
+    margin-top: 4rem auto;
+    /*width: 28rem;*/
+    border-top:0.1rem solid #DFDADA;
+    width: 100%;
+    /*margin-left: 25rem;*/
+    /*margin-right: 2.4rem;*/
+}
+.focus{
+    color: #333;
+}
+.forgetpwd{
+    color: #666;
+    height: 3rem;
+    width: 25rem;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 3rem;
+}/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+ul li{
+    list-style: none;
+}
+/*标签连接*/
+.linka{
+    display: block;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width:1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+     overflow: hidden;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+/*大赏图片及文字*/
+.linka{
+    display: block;
+}
+.qiandao-box{
+    width: 100%;
+    margin-top: 4rem;
+    background: #FFFAF7;
+}
+.qiandao-top{
+    width: 100%;
+    height: 3rem;
+}
+.current-date{
+    float: left;
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    width: 50%;
+    text-align: center;
+}
+.just-qiandao{
+    float: left;
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+#qiandao{
+    position: absolute;
+    width: 0;
+    opacity: 0.8;
+    height: 0;
+    margin-top: 7rem;
+    // left: 50%;
+    z-index: 2
+}
+#qiandaocg{
+    position: absolute;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 3.5rem;
+    background: red;
+    margin-left:-6rem;
+    top :15rem;
+    // vertical-align: middle;
+   // display: none;
+   text-align: center;
+}
+.cg{
+    margin-top: 40%;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+    overflow: hidden;
+}
+.headerbox{
+    line-height: 4rem;
+    font-size: 1.5rem;
+    /*margin-top: 0rem;*/
+    /*width: 20rem;*/
+    /*height:100%;*/
+    text-align: center;
+    /*float: left;*/
+}
+.header-text{
+    height: 100%;
+    line-height: 2rem;
+    font-size: 2rem;
+}
+body{
+    background-color: #EFE4E4;
+}
+/*注册窗口*/
+.registerbox{
+    border-radius: 0.3rem;
+    clear: both;
+    width: 25rem;
+    height: 15rem;
+    background-color: #fff;
+    /*text-align: center;*/
+    /*margin-top: 10rem;*/
+    margin:0 auto;
+    margin-top: 6rem;
+
+    /*margin: 6rem auto;*/
+}
+.emailbox{
+    width: 100%;
+    /*..rowline{
+    margin-top: 2rem auto;
+    width: 28rem;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+*/
+    height: 3.8rem;
+    border: 0px;
+}
+.namebox{
+    width: 100%;
+    /*..rowline{
+    margin-top: 2rem auto;
+    width: 28rem;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+*/
+    height: 3.8rem;
+    border: 0px;
+}
+.inputbox{
+    clear: both;
+    width: 100%;
+    height:90%;
+    border: 0px;
+    text-align: center;
+    /*margin-left: 2.5rem;*/
+}
+.emailtext{
+    clear: both;
+    width: 20rem;
+    height:90%;
+    border: 0px;
+    text-align: center;
+    margin-left: 2.5rem;
+}
+.password{
+    width: 100%;
+    height:3.8rem;
+    border: 0px;
+}
+.buttonbox{
+    clear: both;
+    border-radius: 0.3rem;
+    /*margin-top:-3rem;*/
+    width: 25rem;
+    height: 4rem;
+    background-color: #ff79a5;
+    text-align: center;
+    margin: 0 auto;
+    line-height: 4rem;
+    margin-top: 2rem;
+    /*margin-left: 2.4rem;*/
+    /*background-color: Transparent; */
+    border-style :none;
+}
+.buttontext{
+    width: 98%;
+    height: 98%;
+    border-style: none;
+    background-color: #ff79a5;
+    color: #fff;
+    z-index: 3;
+    font-size: 1.2rem;
+}
+.rowline{
+    z-index: 3;
+    margin-top: 4rem auto;
+    /*width: 28rem;*/
+    border-top:0.1rem solid #DFDADA;
+    width: 100%;
+    /*margin-left: 25rem;*/
+    /*margin-right: 2.4rem;*/
+}
+.focus{
+    color: #333;
+}body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+.partone{
+    width: 100%;
+    height: 4rem;
+    background: #F7F7F7;
+    margin-top: 3.2rem;
+    padding-top: 0.8rem;
+}
+.partone .se-now{
+    display: block;
+    width: 80%;
+    height: 100%;
+    padding-left: 0.5rem;
+    float: left;
+}
+.partone .sousou{
+    width: 30%;
+    height: 100%;
+    /*padding-top: 0.4rem;*/
+}
+.partone .se-btn{
+    width: 70%;
+    height: 46%;
+    background: #f9808c;
+    border-radius: 4px;
+    color: #fff;
+    margin-top: 0.9rem;
+    margin-left: 22rem;
+    text-align: center;
+    padding-top: 0.3rem;
+    /*border: 1px solid blue;*/
+}
+.partone .se-btn a{
+    text-decoration: none;
+    color: #fff;
+}
+.parttwo{
+    clear: both;
+    width: 100%;
+    height: 3rem;
+    border-top: 1px solid #E9E9E9;
+}
+.parttwo .img-one{
+    width: 32%;
+    height: 100%;
+    display: block;
+    float: left;
+}
+.parttwo .img-two{
+    width: 32%;
+    height: 100%;
+}
+.parttwo .img-three{
+    width: 32%;
+    height: 100%;
+}
+.sr-blank{
+    background: #F7F7F7;
+    width: 100%;
+    height: 1.4rem;
+}
+.partthree{
+    width: 100%;
+    height: 30rem;
+    background: #fff;
+    clear: both;
+}
+.partthree .title{
+    border-bottom: 1px solid #E9E9E9;
+    padding-left: 1.8rem;
+    font-size: 1.1rem;
+    color: #000;
+    letter-spacing: 1px;
+}
+.hot-list{
+    width: 100%;
+    height: 3.5rem;    
+}
+.hot-list .li-left{
+    width: 49%;
+    height: 100%;
+    float: left;
+    /*border: 1px solid red;*/
+    border-bottom: 1px solid #E9E9E9;
+    margin-left: 0.3rem;
+}
+.hot-list .hot-title{
+    display: block;
+    float: left;
+    color: #9c9ba5;
+    padding-left: 3rem;
+    font-size: 1.2rem;
+    margin-top: 0.7rem;
+}
+.hot-list .hot-img{
+    display: block;
+    width: 10%;
+    height: 35%;
+    margin-top: 0.5rem;
+    padding-left: 0.4rem;
+}
+.hot-list .li-right{
+    /*clear: both;*/
+    width: 49%;
+    height: 100%;
+    /*border: 1px solid blue;*/
+    float: left;
+    border-bottom: 1px solid #E9E9E9;
+}
+.hot-list .li-right .hot-title{
+    border-left: 1px solid #E9E9E9;
+}
+.line{
+    width: 90%;
+    border: 0.1px solid #E9E9E9;
+    margin-left: 1.2rem;
+
+
+
+/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:-Scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width:3.6rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+     overflow: hidden;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+/*大赏图片及文字*/
+.linka{
+    display: block;
+}
+.cont{
+    width: 100%;
+    height: auto;
+    margin-top: 4rem;
+    text-align: center;
+}
+.boxlist{
+    width: 100%;
+    overflow: hidden;
+    display: block;
+    background: #FFFAFF;    
+}
+.listleft{
+    overflow: hidden;
+    float: left;
+    width: 35%;
+}
+.listright{
+float: left;
+width: 64%;
+overflow: hidden;
+font-size: 1rem;
+
+}
+.proinfo{
+    width: 100%;
+    text-align: center;
+
+}
+.boxlist .listright .proinfo ul{
+    list-style: none;
+    font-size: 0.8rem;
+    width: 100%;
+    margin-left: 0.5rem;
+}
+.boxlist .listright .proinfo ul li{
+    display: inline-block;
+    border-right: 1px dotted #aeb0b2;
+    text-align: center;
+    list-style: none;
+    padding: 0.2rem;
+    width: 4.4rem;
+}
+
+.boxlist .listright .proinfo ul li b{
+    color: #eb215a;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+.btn{
+      text-align: center;
+    margin: 0.5rem;}
+.btn a {
+        display: inline-block;
+        width: 5rem;
+        background: #eb215a;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ff79a5;
+        text-decoration: none; 
+    }
+    /*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width:1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+    overflow: hidden;
+}
+.headerbox{
+    line-height: 4rem;
+    font-size: 1.5rem;
+    /*margin-top: 0rem;*/
+    /*width: 20rem;*/
+    /*height:100%;*/
+    text-align: center;
+    /*float: left;*/
+}
+.header-text{
+    height: 100%;
+    line-height: 2rem;
+    font-size: 2rem;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+
+/*.totetext{
+    float: left;
+    font-size: 30rem;
+    color: #D9ACAC；
+}*/
+/*大赏图片及文字*/
+.linka{
+    display: block;
+}
+.totepic{
+    width: 100%;
+  /*  height: 30rem;*/
+    overflow: hidden;
+  /*  background-color: red;*/
+}
+.totetitle{
+    font-size: 1.4rem;
+    text-align: center;
+    margin-top: 0.5rem;
+
+}
+.totetext{
+    font-size: 1rem;
+    text-align: center;
+    margin-top: 0rem;
+    color: #888;
+    /*float: left;*/
+    /*line-height: 4rem;*/
+}
+
+a{
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+/*空白横条*/
+.blackspace{
+    width: 100%;
+    height: 1rem;
+    background-color: #EFE4E4;
+}
+/*初始化设置*/
+body,html{
+    width: 100%;
+    overflow:scroll;
+    overflow-x: hidden;
+    font-family: "Microsoft YaHei",Sans-serif ;
+}
+body,html,div,ul,li{margin:0;padding:0;}
+@media screen and (min-width:240px) {
+    html, body{
+        font-size:9px;
+    }
+}
+@media screen and (min-width:320px) {
+    html, body{
+        font-size:12px;
+    }
+}
+@media screen and (min-width:480px) {
+    html, body{
+    font-size:18px;
+    }
+}
+@media screen and (min-width:640px) {
+    html, body{
+        font-size:24px;
+    }
+}
+@media screen and (min-width:960px) {
+    html, body{
+        font-size:36px;
+    }
+}
+/*标签连接*/
+.linka{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+/*头部*/
+.header{
+    width: 100%;
+    height: 4rem;
+    background-color: #fff;
+    border-bottom: 0.08rem solid #E5E2E2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-bottom: 4rem;
+}
+.backposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    float: left;
+    overflow: hidden;
+}
+.moreposi{
+    width: 1.7rem;
+    height: 1.7rem;
+    overflow: hidden;
+    float: right;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+/*空白横条*/
+.blackspace{
+    width: 100%;
+    height: 1rem;
+    background-color: #EFE4E4;
+}
+.toppic{
+    margin-top: 4rem;
+}
+.rowline{
+    margin-top: 3rem;
+    width: 85%;
+    border-top:0.1rem solid #DFDADA;
+    margin-left: 2rem;
+    /*margin-right: 1rem;*/
+
+}
+.ds-classify{
+    width: 100%;
+}
+a{
+    text-decoration: none;
+}
+/*每一行的第一张图片*/
+.ds-one{
+    margin-left: 3rem;
+}

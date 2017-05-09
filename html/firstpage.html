@@ -40,10 +40,10 @@
     <!-- 空白横条 -->
     <div class="blackspace"></div>
     <!-- 显示分享 -->
-    <div style="display:hidden;" id="posthidden">
-        <!-- 头像栏 -->
+   <!--  <div style="display:hidden;" id="posthidden">
+        
         <div class="personinfo flexcontainer">
-             <div class="pi-head"> <!--头像-->
+             <div class="pi-head"> 
                 <img src="../img/head1.png" alt="头像" width="100%" height="100%">
             </div>
             <div class="pi-info">
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="rowline"></div>
-        <!-- 数据 -->
+       
         <div class="flexcontainer data-list">
             <div class="flex-item dataposi">
                 <a href="#" class="linka"><img src="../img/eye.png" alt=""></a>
@@ -64,12 +64,12 @@
                  <a href="#" class="linka"><img src="../img/message.png" alt=""></a>
             </div>
         </div>
-        <!-- 空白横条 -->
+        
         <div class="blackspace"></div>
         <div class="sharepic">
             <a href="#"><img src="../img/pic1.jpg" alt="产品图" width="100%"></a>
         </div>
-    </div>
+    </div> -->
     <div>
         <!-- 头像栏 -->
         <div class="personinfo flexcontainer">
@@ -101,41 +101,20 @@
             <a href="#"><img src="../img/pic3.jpg" alt="产品图" width="100%"></a>
         </div>
     </div>
-    <!-- 脚部footer -->
-    <!-- <div class="footer flexcontainer">
-        <div class="flex-item">
-            <div class="buttonbox buttonbox1" >
-                 <a id="a1" class="buttononNav"><img src="../img/home2.png" alt="首页" width="20rem" class="homeimg"></a>
-            </div>
-        </div>
-        <div class="flex-item">
-            <div class="buttonbox buttonbox2" >
-                <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
-            </div>
-        </div>
-        <div class="flex-item">
-            <div class="buttonbox buttonbox3">
-                <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
-            </div>
-        </div>
-        <div class="flex-item">
-            <div class="buttonbox buttonbox4">
-                 <a><img src="../img/home2.png" alt="首页" width="20rem"></a>
-            </div>
-        </div>
-    </div> -->
+   
 <script src="../js/zepto.min.js"></script>
 <script src="../js/mggScrollImg.js"></script>
 <script src="../js/post.js"></script>
+<script src="../js/bmob-min.js"></script>
+<script src="../js/bmobSocketIo-min.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/jquery-3.1.1.min.js"></script>
 <script>
+ Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
 
 (function(){
-/*
-    注意：$.mggScrollImg返回的scrollImg对象上有
-            next，prev，go三个方法，可以实现外部对滚动索引的控制。
-    如：scrollImg.next();//会切换到下一张图片
-        scrollImg.go(0);//会切换到第一张图片
-*/
+
     var scrollImg = $.mggScrollImg('.imgbox ul',{
             loop : true,//循环切换
             auto : true,//自动切换
@@ -143,14 +122,59 @@
                 $('#page').text(ind+1);
             }
         });
-    })()
-    // 实现footer点击图片变换效果      
-    // $(".footer .flex-item .buttonbox a").click(function() {
+    })();
+   
+   // $(document).ready(function(){
+        // var strVar = "";
+        // strVar += " <div style=\"display:hidden;\" id=\"posthidden\">\n";
+        // strVar += "        <!-- 头像栏 -->\n";
+        // strVar += "        <div class=\"personinfo flexcontainer\">\n";
+        // strVar += "             <div class=\"pi-head\"> <!--头像-->\n";
+        // strVar += "                <img src=\"../img/head1.png\" alt=\"头像\" width=\"100%\" height=\"100%\">\n";
+        // strVar += "            <\/div>\n";
+        // strVar += "            <div class=\"pi-info\">\n";
+        // strVar += "                <div class=\"pi-title\">口红<\/div>\n";
+        // strVar += "                <div class=\"pi-name\">123<\/div>\n";
+        // strVar += "            <\/div>\n";
+        // strVar += "        <\/div>\n";
+        // strVar += "        <div class=\"rowline\"><\/div>\n";
+        // strVar += "        <!-- 数据 -->\n";
+        // strVar += "        <div class=\"flexcontainer data-list\">\n";
+        // strVar += "            <div class=\"flex-item dataposi\">\n";
+        // strVar += "                <a href=\"#\" class=\"linka\"><img src=\"../img/eye.png\" alt=\"\"><\/a>\n";
+        // strVar += "            <\/div>\n";
+        // strVar += "            <div class=\"flex-item dataposi\">\n";
+        // strVar += "                 <a href=\"#\" class=\"linka\"><img src=\"../img/good.png\" alt=\"\"><\/a>\n";
+        // strVar += "            <\/div>\n";
+        // strVar += "            <div class=\"flex-item dataposi\">\n";
+        // strVar += "                 <a href=\"#\" class=\"linka\"><img src=\"../img/message.png\" alt=\"\"><\/a>\n";
+        // strVar += "            <\/div>\n";
+        // strVar += "        <\/div>\n";
+        // strVar += "        <!-- 空白横条 -->\n";
+        // strVar += "        <div class=\"blackspace\"><\/div>\n";
+        // strVar += "        <div class=\"sharepic\">\n";
+        // strVar += "            <a href=\"#\"><img src=\"../img/pic1.jpg\" alt=\"产品图\" width=\"100%\"><\/a>\n";
+        // strVar += "        <\/div>\n";
+        // strVar += "    <\/div>\n";
 
-    // $(".footer .flex-item .buttonbox a").removeClass("buttononNav");
-    //     $(this).addClass("buttononNav");
+    // var postShow = Bmob.Object.extend("postList");
+    // var postshow = new Bmob.Query(postShow);
+    // alert("123")
+    // postshow.find({
+    //     success: function(results){
+    //         alert("共查询到 " + results.length + " 条记录");
+            // for (var i = 0; i < results.length; i++) {
+                  // var object = results[i];
+                  // alert(object.id + ' - ' + object.get('playerName'));
+    //             // }
+    //     },
+    //     error: function(error) {
+    //         alert("查询失败: " + error.code + " " + error.message);
+    //       }
     // });
-    
+
+
+   // });
 </script>
 </body>
 </html>

@@ -10,11 +10,8 @@ function checkUser(){
 	  	alert("登录成功");
 	  	var currentUser = Bmob.User.current();
 			if (currentUser) {
-			   window.location.href="firstpage.html";
+			   top.location.href="firstframe.html";
 			}
-			//  else {
-			//     // show the signup or login page
-			// }
 	 
 	  },
 	  error: function(user, error) {

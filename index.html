@@ -13,7 +13,8 @@
     <meta name="description" content="seodescription"/>
     <link rel="stylesheet" href="css/index.css">
     <!--5秒钟后跳转到指定的页面--> 
-    <meta http-equiv="refresh" content="3;url=html/firstframe.html" /> 
+    <!-- <meta http-equiv="refresh" content="3;url=html/firstframe.html" /> -->
+
 
 </head>
 <body>
@@ -21,14 +22,28 @@
        <div class="imgbox1">
            <img src="img/index.png" alt="首页美妆图片广告" height="100%" width="100%">
        </div>
-</body>
+
    <script src="js/jquery-3.1.1.min.js" type="text/javascript"></script>
   <script src="js/bmob-min.js"></script>
   <script src="js/bmobSocketIo-min.js"></script>
   <script src="js/register.js" type="text/javascript"></script>
-  <script >
-    Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
-    BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
+  <script>
+       Bmob.initialize("4750c76647d59c2cfe99dc4a8a49cfda", "c1b71ebe933cd66cd87e6142a30372cc");
+      BmobSocketIo.initialize("4750c76647d59c2cfe99dc4a8a49cfda");
 
-    </script> 
+      $(document).ready(function(){
+          var currentUser = Bmob.User.current();
+          if (currentUser) {
+              alert("欢迎" + Bmob.User.current().getUsername());
+              setTimeout(window.location.href="html/firstframe.html",3)
+          
+
+          } else {
+              alert("请登录")
+              setTimeout(window.location.href="html/login.html",3)
+              // show the signup or login page
+          }
+      });
+  </script>
+  </body>
 </html>

@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>去淘宝</title>
 	<link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css">
-	
+	<link rel="stylesheet" href="../css/app.css">
     <style>
     	.linka{
     	    display: block;
@@ -44,23 +44,40 @@
 			<h2>我的美丽秘密</h2>
 			<button href="#" data-role="button" data-shadow="false" data-theme="d" data-mini="true" style="display:inline; background-color:#fff;color:#999;border-color:#fff;border-radius:100%;" onclick="post();">发布</button>
 		</div>
-		<div data-role="content" data-theme="f" style="background-color:#fff;">
-			 <div>
-		   		<input type="text" placeholder="搜索标签" style="height:30px; width=200px;" id="productnameLable">
-		   		<!-- <a href="#" data-rola="button">搜索</a> -->
+		<div style="background-color:#fff; margin-top:10px;" data-role="none">
+			<div  style="padding-left:20px;">	
+				<input type="text" data-role="none" placeholder="搜索标签" style=" display:inline;height:35px; width:180px;position:relative;left:40px;" id="productnameLable" class="">
+				<button data-role="none" style="width:60px;height:35px;position:relative;topx:-35px;left:50px;border-radius: 3px; border:0px;">搜索</button>
 		   </div>
-		    <div class="cover" style="height:100px;">
-		    	<input type="file" id="uploadImg" value="上传封面图片"  placeholder="上传封面图片">
-		    	<!-- <a href="#" data-role="button" data-shadow="false" data-inline="true"style="background-color:#fff;border-color:#fff;color:#CECACA;left:138px;top:30px;">设置封面</a> -->
+		</div>
+		    <div  style="height:80px;">
+		    	<input data-role="none" style="height:30px; text-align:center;margin-top:30px;position:relative;left:60px;" type="file" id="uploadImg" placeholder="上传封面图片">
 		    </div>
 		     <div>
-		   		<!-- <label for="fname" class="ui-hidden-accessible">分享你的美丽秘密吧……</label> -->
-				<textarea name="share" id="share" placeholder="分享你的美丽秘密吧……"></textarea style="min-height:200px;">
-		    	<!-- <a href="#" data-role="button"data-shadow="false" data-corners="false" style="background-color:#fff;border-color:#fff;position:fixed;left:10px;padding:0 220px 0 0;"> -->
+		 		
+			<div class="quiz" data-role="none">
+				<!-- <h3>我要评论</h3> -->
+				<div class="quiz_content">
+					<!-- <form action="" id="" method="post"> -->
+						<div class="goods-comm">
+							<div class="goods-comm-stars">
+								<span class="star_l">满意度：</span>
+								<div id="rate-comm-1" class="rate-comm"></div>
+							</div>
+						</div>
+
+						<div class="l_text">
+							<!-- <label class="m_flo">内  容：</label> -->
+							<textarea data-role="none" name="" id="postcontent" class="text"></textarea>
+							<!-- <span class="tr">字数限制为5-200个</span> -->
+						</div>
+						<button data-role="none" style="width:60px;height:35px;position:relative;left:120px;" onclick="postClick();">发布</button>
+					<!-- </form> -->
+				</div>
+			</div>
+			
 		    </div>
-		   <!--  <a href="#pagetwo" data-role="button" data-shadow="false" data-inline="true" data-transition="slide" data-mini="true" style="border-color:#fff;background-color:#F93AA2;color:#fff;font-weight:lighter;">#选择标签</a>
-		   -->
-		   
+		
 		</div>
 		
 	</div>
@@ -122,6 +139,6 @@
     <script src="../js/jquery.mobile-1.4.5.min.js"></script>
     <script src="../js/bmob-min.js"></script>
 	<script src="../js/bmobSocketIo-min.js"></script>
-    <script src="../js/post.js"></script>
+    <script src="../js/app.js"></script>
 </body>
 </html>

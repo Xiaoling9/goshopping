@@ -4,36 +4,8 @@
 	<meta charset="UTF-8">
 	<title>我的</title>
 	<link rel="stylesheet" href="../css/jquery.mobile-2.4.5.min.css">
-	<script src="../js/jquery-1.11.3.min.js"></script>
-    <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+	
     <style>
-    	/*
-	    body,html,div,ul,li{margin:0;padding:0;}
-	    @media screen and (min-width:240px) {
-	        html, body{
-	            font-size:9px;
-	        }
-	    }
-	    @media screen and (min-width:320px) {
-	        html, body{
-	            font-size:12px;
-	        }
-	    }
-	    @media screen and (min-width:480px) {
-	        html, body{
-	        font-size:18px;
-	        }
-	    }
-	    @media screen and (min-width:640px) {
-	        html, body{
-	            font-size:24px;
-	        }
-	    }
-	    @media screen and (min-width:960px) {
-	        html, body{
-	            font-size:36px;
-	        }
-	    }*/
 		.headpic{
 			width:43px;
 			height: 43px;
@@ -84,8 +56,7 @@
 					<img src="../img/head1.png" alt="头像" width="100%">
 				</div>
 				<div class="headinfo">
-					<div class="headinfo-name">
-						<p class="nametext" style="margin-left:20px;">熊猫胖胖Panda</p>
+					<div class="headinfo-name" id="username_content">
 					</div>
 					<div class="rowline" style="margin-left:60px;"></div>
 				</div>
@@ -106,27 +77,7 @@
 			<li>
 				<a href="#" style="color:#666;"><img src="../img/2.png"alt="消息"class="ui-li-icon">消息</a>
 			</li>
-		<!-- 	<li>
-				<a href="#" style="color:#666;"><img src="../img/3.png"alt="欲望清单"class="ui-li-icon">欲望清单</a>
-			</li>
-			<li>
-				<a href="#" style="color:#666;"><img src="../img/4.png"alt="我的收藏"class="ui-li-icon">我的收藏</a>
-			</li>
-			</ul>
-			<ul data-role="listview" data-inset="true" >
-			<li>
-				<a href="#" style="color:#666;"><img src="../img/5.png"alt="我的订单"class="ui-li-icon">我的订单</a>
-			</li>
-			<li>
-				<a href="#" style="color:#666;"><img src="../img/6.png"alt="优惠券"class="ui-li-icon">优惠券</a>
-			</li>
-			<li>
-				<a href="#" style="color:#666;"><img src="../img/7.png"alt="兑换码、邀请码"class="ui-li-icon">兑换码、邀请码</a>
-			</li>
-			<li>
-				<a href="#" style="color:#666;"><img src="../img/8.png"alt="意见反馈"class="ui-li-icon">意见反馈</a>
-			</li>
-			</ul> -->
+		
 			<ul data-role="listview" data-inset="true" >
 			<li>
 				<a href="#" style="color:#666;"><img src="../img/9.png"alt="致用户的一封信"class="ui-li-icon">致用户的一封信</a>
@@ -152,24 +103,9 @@
 				<li>
 					<a href="#" style="color:#666;">联系我们</a>
 				</li>
-				<!-- <li>
-					<a href="#" style="color:#666;">致用户的一封信</a>
-				</li> -->
+				
 				</ul>
-			<!-- 	<ul data-role="listview" data-inset="true">
-				<li>
-					<a href="#" style="color:#666;">用户协议</a>
-				</li>
-				<li>
-					<a href="#" style="color:#666;">清除缓存</a>
-				</li>
-				<li>
-					<a href="#" style="color:#666;">评价一下下</a>
-				</li>
-				<li>
-					<a href="#" style="color:#666;">肤质测试</a>
-				</li>
-				</ul> -->
+			
 				<ul data-role="listview" data-inset="true">
 				<li>
 					<a href="#pagethr"data-role="button" data-rel="dialog" style="color:#FC629D">退出登录</a>
@@ -185,11 +121,17 @@
 		<div data-role="content" >
 			<h4>亲爱的主人，你真的要退出了吗？(╯﹏╰)</h4>
 			<div data-role="controlgroup" data-type="horizontal">
-			<a href="#" data-role="button" data-mini="true" data-shadow="false" style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:30px;">确定</a>
+			<a href="#" data-role="button" data-mini="true" data-shadow="false" style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:30px;" id="logout-btn">确定</a>
 			<a href="#pagetwo" data-role="button" data-mini="true" data-shadow="false"data-transition="pop"style="background:#F93AA2;color:#FFFFFF;border-radius:100%;left:80px;">取消</a>
 			</div>
 		</div>
 		
 	</div>
+<script src="../js/jquery-1.11.3.min.js"></script>
+ <!-- <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script> -->
+<script src="../js/jquery.mobile-1.4.5.min.js"></script>
+ <script src="../js/bmob-min.js"></script>
+ <script src="../js/bmobSocketIo-min.js"></script>
+ <script src="../js/app.js"></script>		
 </body>
 </html>
