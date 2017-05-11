@@ -24,8 +24,8 @@
 		 var file = new Bmob.File($("#uploadImg").val(),mypostpic); 
 	}
 	var myproductgrade = current_value;
-	var mypostcontent = $("#postcontent").text();
-	var currentUser =Bmob.User.current().id;
+	var mypostcontent = $("#postcontent").val();
+	var currentUser =Bmob.User.current().getUsername();
 	// alert(currentUser);
 	var postlist = Bmob.Object.extend("postList");
 	var mypost = new postlist();
@@ -39,6 +39,7 @@
 		success: function(mypost){
 			// alert("用户id" + currentUser);
 			alert("发布成功！" );
+			top.window.location="firstframe.html";
 		},
 		error: function(mypost,error){
 			alert("发布失败" + error.description + error.code +error.message);
